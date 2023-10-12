@@ -4,17 +4,49 @@
 
 1. Zapoznać się z działaniem poleceń: mkdir, rmdir, rm, cp, mv, ln (wykorzystać informacje zawarte w manualu).
 
-**mkdir**
+**mkdir** -
+Przykład:
+```sh
+$ mkdir directory
+```
 
-**rmdir**
+**rmdir** -
+Przykład:
+```sh
+$ rmdir directory
+```
 
-**rm**
+**rm** -
+Przykład:
+```sh
+$ echo test > test
+$ ls
+$ rm test
+$ ls
+```
 
-**cp**
+**cp** -
+Przykład:
+```sh
+$ echo test > test
+$ cp test a
+$ ls -l
+$ ls -i
+```
 
-**mv**
+**mv** -
+Przykład:
+```sh
+$ mv test tset
+$ ls
+```
 
-**ln**
+**ln**  -
+Przykład:
+```sh
+$ ln a b
+$ ln -s a c
+```
 
 2. Sprawdzić znaczenie praw dostępu rwx dla pliku zwykłego i katalogu. Jakie prawa własności i prawa dostępu do katalogu i znajdujących się w nim plików są konieczne (minimalny zestaw), aby wykonać operacje: cp, mv i rm na tych plikach? Wyniki przedstawić w tabeli. Sprawdzić uprawnienia potrzebne do usunięcia całej gałęzi drzewa katalogów (czyli katalogu wraz z zawartymi plikami) (2 pkt)
 
@@ -59,3 +91,11 @@ Możliwe jest utworzenie jedynie symbolicznego dowiązania do nie istniejącego 
 
 4. Zapoznać się z działaniem polecenia find. Wykonać testy według zaleceń prowadzącego ćwiczenie. (1 pkt)
 
+**find** -
+
+Przykład:
+```sh
+
+```
+
+TODO: zalecenie nie znane
