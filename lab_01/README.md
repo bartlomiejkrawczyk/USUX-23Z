@@ -17,11 +17,12 @@ Kolejno dostępne są punkty:
 
 W celu wyszukania manuali dla komed ze wszystkich dostępnych sekcji można podać flagę `-a`:
 ```sh
-$ man man | grep '\--all' -A 4
+usux5@cad10[~]$ man man | grep '\--all' -A 4
        -a, --all
-              By default, man will exit after displaying the most suitable manual  page  it  finds.
-              Using  this  option  forces man to display all the manual pages with names that match
-              the search criteria.
+              Domyślnie  man  zakończy  działanie  po wyświetleniu najbardziej
+              odpowiedniej strony podręcznika, jaką znajdzie. Użycie tej opcji
+              spowoduje,  że man pokaże wszystkie dostępne strony podręcznika,
+              których nazwy odpowiadają kryteriom wyszukiwania.
 ```
 
 Poszczególne sekcje są dostępne podając dodatkowo numer sekcji:
@@ -34,6 +35,7 @@ Polecenia systemowe (sekcja 1):
 - cp
 - printf
 - sleep
+- read
 - write
 
 Funkcje systemowe (sekcja 2):
@@ -42,8 +44,11 @@ Funkcje systemowe (sekcja 2):
 - write
 
 Standardowe funkcje języka C (sekcja 3):
+- mkdir
 - printf
 - sleep
+- read
+- write
 
 2. Sprawdzić działanie programów which, whatis i apropos.
 
@@ -57,7 +62,7 @@ $ which cp
 
 ```sh
 $ whatis which
-which (1)            - locate a command
+which (1)            - lokalizuje polecenie
 ```
 
 Komenda `which` pozwala na zlokalizowanie pliku wykonywalnego. Wykonuje to poprzez przeszukiwanie lokalizacji ze zmiennej `$PATH` - zwraca lokalizację pierwszego napotkanego pliku o nazwie równej argumentowi.
@@ -67,13 +72,15 @@ Komenda `which` pozwala na zlokalizowanie pliku wykonywalnego. Wykonuje to poprz
 Przykład:
 ```sh
 $ whatis mkdir
-mkdir (1)            - make directories
+mkdir (1)            - tworzy katalogi
+mkdir (1p)           - make directories
 mkdir (2)            - create a directory
+mkdir (3p)           - make a directory
 ```
 
 ```sh
 $ whatis whatis
-whatis (1)           - display one-line manual page descriptions
+whatis (1)           - wyświetla opisy stron podręcznika systemowego
 ```
 
 Program `whatis` zwraca jedno-linijkowy opis manuali oraz w jakiej sekcji dana komenda może się znajdować.
@@ -83,7 +90,7 @@ Program `whatis` zwraca jedno-linijkowy opis manuali oraz w jakiej sekcji dana k
 Przykład:
 ```sh
 $ apropos apropos
-apropos (1)          - search the manual page names and descriptions
+apropos (1)          - przeszukiwanie nazw i opisów stron podręcznika ekranowego
 ```
 
 Program `apropos` pozwala przeszukać wszystkie dostępne manuale w poszukiwanie pewnego słowa kluczowego. Dla znalezionych manuali wyświetlany jest krótki opis.
@@ -92,11 +99,43 @@ Program `apropos` pozwala przeszukać wszystkie dostępne manuale w poszukiwanie
 
 **id** - pozwala wyświetlić uid użytkownika oraz id grup w których się znajduje
 
-**who** - 
+Przykład:
+```sh
+$ id
+uid=3005(usux5) gid=3000(usux) grupy=3000(usux)
+```
 
-**w** - pokazuje kto jest w danym momencie zalogowany i co teraz robi
+**who** - komenda umożliwia wyświetlenie zalogowanych użytkowników
+
+Przykład:
+```sh
+$ who
+usux5    :0           2023-10-12 10:21 (:0)
+usux5    pts/0        2023-10-12 10:23 (:0)
+usux5    pts/1        2023-10-12 10:24 (:0)
+```
+
+**w** - pokazuje kto jest w danym momencie zalogowany oraz co aktualnie robi
+
+Przykład:
+```sh
+$ w
+ 10:40:46 up 12 days, 20:27,  3 users,  load average: 0,12, 0,10, 0,13
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+usux5    :0       :0               10:21   ?xdm?  18:56   0.29s mate-session
+usux5    pts/0    :0               10:23    6.00s  0.77s  0.35s vim README.md
+usux5    pts/1    :0               10:24    6.00s  0.09s  0.00s w
+```
 
 **last** - pozwala wylistować datę ostatnio zalogowanych użytkowników
+
+Przykład:
+```sh
+usux5@cad10[~]$ last | grep "still logged in"
+usux5    pts/1        :0               Thu Oct 12 10:24   still logged in   
+usux5    pts/0        :0               Thu Oct 12 10:23   still logged in   
+usux5    :0           :0               Thu Oct 12 10:21   still logged in
+```
 
 4. Za pomocą poleceń pwd, ls i cd obejrzeć strukturę drzewa katalogów. Sprawdzić działanie opcji i argumentów.
 
@@ -104,31 +143,34 @@ Program `apropos` pozwala przeszukać wszystkie dostępne manuale w poszukiwanie
 
 Komenda pozwala wyświetlić bieżącą ścieżkę.
 ```sh
-$ pwd
-/home/bartlomiejkrawczyk/USUX
+usux5@cad10[~/USUX]$ pwd
+/lab/usux5/USUX
 ```
 
-Z dostępnych flat ciekawą jest unikanie symlinków.
+Z dostępnych flag ciekawą jest unikanie symlinków `--physical`.
 
 **ls**
 
 Program pozwala wylistować zawartość aktualnego katalogu.
 ```sh
 $ ls
-lab_01
+README.md
 ```
 
 Z flag wartych uwagi są:
 - `-l` - pozwala wylistować metadane plików
-- `-a` - wyświetla całą zawartość folderów - włącznie z ukrytymi plikami
+- `-a` - wyświetla całą zawartość folderów - włącznie z ukrytymi plikami oraz . i ..
+- `-A` - to samo co `-a` jednak pomija . i ..
+- `-i` - wyświetla numer i-węzła każdego pliku
+- `-R` - rekursywne listowanie katalogów
 
 ```sh
-ls -al
-total 56
-drwxr-xr-x 14 bartlomiejkrawczyk bartlomiejkrawczyk 4096 Oct  5 10:12 .
-drwxr-x--- 27 bartlomiejkrawczyk bartlomiejkrawczyk 4096 Oct  5 11:10 ..
-drwxr-xr-x  7 bartlomiejkrawczyk bartlomiejkrawczyk 4096 Oct  5 10:13 .git
-drwxr-xr-x  2 bartlomiejkrawczyk bartlomiejkrawczyk 4096 Oct  5 11:06 lab_01
+$ ls -al
+razem 24
+drwxr-xr-x 2 usux5 usux    43 10-12 10:46 .
+drwxr-xr-x 5 usux5 usux    43 10-12 10:24 ..
+-rw-r--r-- 1 usux5 usux  6004 10-12 10:46 README.md
+-rw-r--r-- 1 usux5 usux 16384 10-12 10:49 .README.md.swp
 ```
 
 **cd**
@@ -136,42 +178,42 @@ drwxr-xr-x  2 bartlomiejkrawczyk bartlomiejkrawczyk 4096 Oct  5 11:06 lab_01
 Pozwala na modyfikację bieżącej ścieżki.
 
 ```sh
-~/USUX$ cd lab_01/
-
-~/USUX/lab_01$ cd -
-
-~/USUX$ cd
-
-~$
-```
-
-
-**tree**
-
-Pozwala wyświetlić strukturę katalogów w postaci drzewa.
-```sh
-tree
-.
-└── lab_01
-    └── README.md
+usux5@cad10[~/USUX/lab_01]$ cd ..
+usux5@cad10[~/USUX]$ cd lab_01/
+usux5@cad10[~/USUX/lab_01]$ cd -
+~/USUX
+usux5@cad10[~/USUX]$ cd
+usux5@cad10[~]$ 
 ```
 
 5. Zapoznać się z działaniem programów do przeglądania plików tekstowych: cat, more i less.
 
-**cat** - służy do konkatenacji plików, dodatkowo pozwala na wyświetlenie zawartości pliku w konsoli.
+**cat** - służy do konkatenacji plików i wypisania ich na standardowe wyjście, co pozwala na wyświetlenie zawartości pliku w konsoli.
 
-**more** - pozwala na wyświetlenie zawartości pliku po jednej stronie na raz.
+Przykład:
+```sh
+usux5@cad10[~/USUX/lab_01]$ echo Ala ma kota > test
+usux5@cad10[~/USUX/lab_01]$ cat test 
+Ala ma kota
+usux5@cad10[~/USUX/lab_01]$ echo 1 > 01
+usux5@cad10[~/USUX/lab_01]$ echo 2 > 02
+usux5@cad10[~/USUX/lab_01]$ cat 01 02 
+1
+2
+```
 
-**less** - pozwala na wyświetlenie zawartości pliku z wieloma opcjami przewijania zawartości.
+**more** - pozwala na wyświetlenie zawartości pliku po jednej stronie na raz. Przewijanie po pliku jest możliwe przy użyciu przycisków spacja, d, s, f lub b.
+
+**less** - podobnie jak more pozwala na wyświetlenie zawartości pliku z wieloma opcjami przewijania zawartości. Intuicyjna obsługa za pomocą strzałek, przewijanie albo po stronie, albo po pełnych stronach.
 
 6. Zapoznać się z działaniem edytorów vim, nano, gedit i geany. Przy pomocy edytora vim napisać krótkie sprawozdanie z ćwiczenia.
 
 **vim** - lekki, jednak zaawansowany edytor tekstu. Wymaga zapoznania się z podstawowymi komendami, aby móc z niego korzystać.
 
-**nano** - prosty edytor tekstu przystępny dla nowych użytkowników.
+**nano** - prosty edytor tekstu przystępny dla nowych użytkowników. Skróty klawiszowe bezpośrednio dostępne z poziomu terminala.
 
 **gedit** - pełna aplikacja z interfejsem graficznym, zapewnia podstawowe funkcje edycji tekstu.
 
-**geany** - stanowi IDE z wieloma opcjami.
+**geany** - stanowi lekkie IDE z wieloma opcjami. Umożliwia budowanie programów z wykorzystaniem make.
 
 
