@@ -8,12 +8,18 @@
 Polecenia `man` stanowi interfejs dla systemowych podręczników dostępnych dla użytkownika. Man przeszukuje dostępne pliki i domyślnie otwiera je z wykorzystaniem programu `less`. Podręczniki `man` mają określoną budowę.
 
 Kolejno dostępne są punkty:
-- krótki opis
-- dostępne opcje
+- nazwa / krótki opis
+- składnia / dostępne opcje
 - długi opis
 - przykłady użycia
-- przegląd
-- opis dostępnych opcji wyołania programu  
+- wprowadzenie
+- zachowania domyślne
+- opis dostępnych opcji wyołania programu
+- kody zakończenia i co oznaczają
+- środowisko
+- pliki / opis plików konfiguracyjnych
+- przydatne metody
+- historia 
 
 W celu wyszukania manuali dla komed ze wszystkich dostępnych sekcji można podać flagę `-a`:
 ```sh
@@ -23,6 +29,18 @@ usux5@cad10[~]$ man man | grep '\--all' -A 4
               odpowiedniej strony podręcznika, jaką znajdzie. Użycie tej opcji
               spowoduje,  że man pokaże wszystkie dostępne strony podręcznika,
               których nazwy odpowiadają kryteriom wyszukiwania.
+```
+
+Przykład:
+```sh
+$ man -a man
+--Man-- następna: man(1) [ przeglądaj (return) | pomiń (Ctrl-D) | zakończ (Ctrl-C) ]
+
+--Man-- następna: man(1p) [ przeglądaj (return) | pomiń (Ctrl-D) | zakończ (Ctrl-C) ]
+
+--Man-- następna: man(7) [ przeglądaj (return) | pomiń (Ctrl-D) | zakończ (Ctrl-C) ]
+
+--Man-- następna: man(7) [ przeglądaj (return) | pomiń (Ctrl-D) | zakończ (Ctrl-C) ]
 ```
 
 Poszczególne sekcje są dostępne podając dodatkowo numer sekcji:
@@ -97,7 +115,7 @@ Program `apropos` pozwala przeszukać wszystkie dostępne manuale w poszukiwanie
 
 3. Wywołać polecenia id, who, w, last. Sprawdzić w manualu zawartość kolumn oraz dostępne opcje.
 
-**id** - pozwala wyświetlić uid użytkownika oraz id grup w których się znajduje
+**id** - pozwala wyświetlić uid użytkownika oraz id grup w których się znajduje.
 
 Przykład:
 ```sh
@@ -172,10 +190,11 @@ drwxr-xr-x 5 usux5 usux    43 10-12 10:24 ..
 -rw-r--r-- 1 usux5 usux  6004 10-12 10:46 README.md
 -rw-r--r-- 1 usux5 usux 16384 10-12 10:49 .README.md.swp
 ```
+Warto zwrócić uwagę na występowanie `.` oraz `..` wewnątrz katalogu. `.` to odniesienie do aktualnego katalogu, a `..` do katalogu rodzica co umożliwia przemieszczanie się wzdłuż gałęzi drzewa katalogów.
 
 **cd**
 
-Pozwala na modyfikację bieżącej ścieżki.
+Pozwala na modyfikację bieżącej ścieżki. Bez podania argumentu przenoszeni jesteśmy do katalogu domowego.
 
 ```sh
 usux5@cad10[~/USUX/lab_01]$ cd ..
@@ -204,11 +223,28 @@ usux5@cad10[~/USUX/lab_01]$ cat 01 02
 
 **more** - pozwala na wyświetlenie zawartości pliku po jednej stronie na raz. Przewijanie po pliku jest możliwe przy użyciu przycisków spacja, d, s, f lub b.
 
-**less** - podobnie jak more pozwala na wyświetlenie zawartości pliku z wieloma opcjami przewijania zawartości. Intuicyjna obsługa za pomocą strzałek, przewijanie albo po stronie, albo po pełnych stronach.
+**less** - podobnie jak more pozwala na wyświetlenie zawartości pliku z wieloma opcjami przewijania zawartości. Intuicyjna obsługa za pomocą strzałek oraz scrolla, przewijanie albo po lini, albo po pełnych stronach.
 
 6. Zapoznać się z działaniem edytorów vim, nano, gedit i geany. Przy pomocy edytora vim napisać krótkie sprawozdanie z ćwiczenia.
 
 **vim** - lekki, jednak zaawansowany edytor tekstu. Wymaga zapoznania się z podstawowymi komendami, aby móc z niego korzystać.
+
+Warto zwrócić uwagę na skróty:
+- Esc lub Ctrl + C - wyjście z trybu wprowadzania
+- a - przejście do trybu wprowadzania za aktualnym kursorem
+- :wq - zapisanie pliku
+- :w NAME - zapisanie pliku o podanej nazwie
+- dd - wycięcie lini
+- p - wstawienie tekstu ze schowka za kursorem
+- 2dd - umożliwia wycinanie 2 lini na raz, możliwe jest podanie różnej ilości 
+- yy - pozwala na kopiowanie lini
+- u - służy do wycofania wprowadzonych zmian
+- Ctrl + r - pozwala na przywrócenie wycofanej zmiany
+- 0 - przejście na początek wiersza
+- $ - przejście na koniec wiersza
+- strzałki, hjkl - umożliwa przemieszczanie się po pliku
+- /TEXT - wyszukiwanie tekstu do przodu
+- ?TEXT - wyszukiwanie tekstu w tył
 
 **nano** - prosty edytor tekstu przystępny dla nowych użytkowników. Skróty klawiszowe bezpośrednio dostępne z poziomu terminala.
 
