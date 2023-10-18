@@ -4,48 +4,76 @@
 
 1. Zapoznać się z działaniem poleceń: mkdir, rmdir, rm, cp, mv, ln (wykorzystać informacje zawarte w manualu).
 
-**mkdir** -
+**mkdir** - program służy do tworzenia katalogów. Możliwe jest podanie opcji `-p`, aby utworzyć wszystkie katalogi ze ścieżki lub zapobiec błędowi, jeśli katalogi istnieją.
+
 Przykład:
 ```sh
 $ mkdir directory
+$ ls
+README.md  directory
 ```
 
-**rmdir** -
+**rmdir** - służy do usuwania pustych katalogów. Podobnie jak mkdir, możliwe jest usuwanie wielu katalogów z podaniem flagi `-p`.
+
 Przykład:
 ```sh
 $ rmdir directory
+$ ls
+README.md
 ```
 
-**rm** -
+**rm** - służy do usuwania (`unlink`) plików lub katalogów. Program zmniejsza ilość wskazań na inode i jeśli wartość spada do 0 to usuwana jest zawartość pliku.
+
+Warto zwrócić uwagę na flagi:
+- `-r` - rekursywne usuwanie katalogów i zawartości
+- `-d` - usuwanie pustych katalogów
+- `-f` / `--force` - ignorowanie nie istniejących plików, wyłączenie zapytań przed usunięciem pliku
+- `-i` - zapytanie przed usunięciem każdego pliku
+
 Przykład:
 ```sh
 $ echo test > test
 $ ls
+README.md  test
 $ rm test
+README.md
 $ ls
 ```
 
-**cp** -
+**cp** - program do kopiowania zawartości plików oraz katalogów.
+
 Przykład:
 ```sh
 $ echo test > test
-$ cp test a
+$ cp test copy
 $ ls -l
+TODO
 $ ls -i
+18327 README.md  48540 copy  48543 test
 ```
 
-**mv** -
+**mv** - umożliwia przenoszenie plików z jednego miejsca w drugie. Dodatkowo pozwala na zmianę nazwy pliku, jeśli nie zmieniamy ścieżki. Możliwa jest zmiana relatywna do aktualnego katalogu oraz zmiana relatywna do `/`.
 Przykład:
 ```sh
 $ mv test tset
 $ ls
+README.md  copy  tset
+$ mv tset test
 ```
 
-**ln**  -
+**ln**  - służy do tworzenia połączeń między plikami. Domyślnie tworzone są twarde dowiązania. Dowiązania symboliczne możliwe są do utworzenia po podaniu flagi `-s`.
+
 Przykład:
 ```sh
-$ ln a b
-$ ln -s a c
+$ ln test hard
+$ ln -s test symbolic
+$ ls -l
+total 20
+-rw-r--r-- 1 bartlomiejkrawczyk bartlomiejkrawczyk 4246 Oct 18 19:39 README.md
+-rw-r--r-- 1 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:32 copy
+-rw-r--r-- 2 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:28 hard
+lrwxrwxrwx 1 bartlomiejkrawczyk bartlomiejkrawczyk    4 Oct 18 19:40 symbolic -> test
+-rw-r--r-- 2 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:28 test
 ```
 
 2. Sprawdzić znaczenie praw dostępu rwx dla pliku zwykłego i katalogu. Jakie prawa własności i prawa dostępu do katalogu i znajdujących się w nim plików są konieczne (minimalny zestaw), aby wykonać operacje: cp, mv i rm na tych plikach? Wyniki przedstawić w tabeli. Sprawdzić uprawnienia potrzebne do usunięcia całej gałęzi drzewa katalogów (czyli katalogu wraz z zawartymi plikami) (2 pkt)
@@ -67,35 +95,52 @@ ln -s test symbolic
 ln test hard
 ```
 
+> W jaki sposób rozróżnić te pozycje w katalogu?
+
 ```sh
 $ ls -l
-total 16
--rw-r--r-- 1 bartlomiejkrawczyk bartlomiejkrawczyk 1383 Oct  5 12:41 README.md
--rw-r--r-- 1 bartlomiejkrawczyk bartlomiejkrawczyk    4 Oct  5 12:40 copy
--rw-r--r-- 2 bartlomiejkrawczyk bartlomiejkrawczyk    4 Oct  5 12:39 hard
-lrwxrwxrwx 1 bartlomiejkrawczyk bartlomiejkrawczyk    4 Oct  5 12:40 symbolic -> test
--rw-r--r-- 2 bartlomiejkrawczyk bartlomiejkrawczyk    4 Oct  5 12:39 test
+total 20
+-rw-r--r-- 1 bartlomiejkrawczyk bartlomiejkrawczyk 4719 Oct 18 19:43 README.md
+-rw-r--r-- 1 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:32 copy
+-rw-r--r-- 2 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:28 hard
+lrwxrwxrwx 1 bartlomiejkrawczyk bartlomiejkrawczyk    4 Oct 18 19:40 symbolic -> test
+-rw-r--r-- 2 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:28 test
 ```
 
-W jaki sposób rozróżnić te pozycje w katalogu? Ile zużyto i-węzłów? Czy można utworzyć dowiązanie do nieistniejącego pliku?
+Kopia:
+- identyczna zawartość co plik kopiowany
+- 1 dowiązanie w inode
 
-Po wywołaniu komendy `ls` z flagą `-l` otrzymujemy informacje o ilości dowiązań do danego pliku, a w przypadku dowiązania symbolicznego pokazana jest strzałka wskazująca na dowiązanie.
+Dowiązanie symboliczne:
+- program ls wyświetla ścieżkę, na którą plik wskazuje
+- dowiązanie stanowi oddzielny plik (1 dowiązanie do inode)
 
-Dowiązanie symboliczne to tak naprawdę utworzenie nowego pliku, który przechowuje adres pliku wskazywanego. To programy same definiują czy chcą korzystać z pliku wskazywanego, czy może działać na symlinku.
+```sh
+$ ls --inode
+ 18327 README.md   48540 copy   48543 hard  274441 symbolic   48543 test
+```
 
-Kopia to utworzenie całkowicie nowego pliku o zawartości takiej jak plik kopiowany.
+Dowiązanie twarde:
+- program ls wyświetla zwiększoną ilość dowiązań do pliku
+- możliwe jest także sprawdzenie numeru inode (hard i test mają identyczny numer - wskazują na ten sam plik)
 
-Dowiązanie `hard` to utworzenie wskazania na dany plik bez tworzenia kopii. 
+> Ile zużyto i-węzłów?
+
+- kopia oraz dowiązanie symboliczne wykorzystały po 1 i-węźle
+- dowiązanie twarde nie zwiększyło ilości i-węzłów (zwiększona została ilość dowiązań w istniejącym i-węźle)
+
+> Czy można utworzyć dowiązanie do nieistniejącego pliku?
 
 Możliwe jest utworzenie jedynie symbolicznego dowiązania do nie istniejącego pliku.
 
 4. Zapoznać się z działaniem polecenia find. Wykonać testy według zaleceń prowadzącego ćwiczenie. (1 pkt)
 
-**find** -
+**find** - program pozwalający na przeszukiwanie hierarchii plików.
+
+TODO: zalecenie nie znane
 
 Przykład:
 ```sh
-
+find . -type d -group grupa -perm /g+r -exec chmod 700 {} +
 ```
 
-TODO: zalecenie nie znane
