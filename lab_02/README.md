@@ -10,7 +10,7 @@ Przykład:
 ```sh
 $ mkdir directory
 $ ls
-README.md  directory
+directory  README.md
 ```
 
 **rmdir** - służy do usuwania pustych katalogów. Podobnie jak mkdir, możliwe jest usuwanie wielu katalogów z podaniem flagi `-p`.
@@ -36,8 +36,8 @@ $ echo test > test
 $ ls
 README.md  test
 $ rm test
-README.md
 $ ls
+README.md
 ```
 
 **cp** - program do kopiowania zawartości plików oraz katalogów.
@@ -47,9 +47,12 @@ Przykład:
 $ echo test > test
 $ cp test copy
 $ ls -l
-TODO
+razem 16
+-rw-r--r-- 1 usux5 usux    5 10-19 10:10 copy
+-rw-r--r-- 1 usux5 usux 4852 10-19 10:10 README.md
+-rw-r--r-- 1 usux5 usux    5 10-19 10:10 test
 $ ls -i
-18327 README.md  48540 copy  48543 test
+2152604647 copy  2150583025 README.md  2150370953 test
 ```
 
 **mv** - umożliwia przenoszenie plików z jednego miejsca w drugie. Dodatkowo pozwala na zmianę nazwy pliku, jeśli nie zmieniamy ścieżki. Możliwa jest zmiana relatywna do aktualnego katalogu oraz zmiana relatywna do `/`.
@@ -57,7 +60,7 @@ Przykład:
 ```sh
 $ mv test tset
 $ ls
-README.md  copy  tset
+copy  README.md  tset
 $ mv tset test
 ```
 
@@ -68,28 +71,47 @@ Przykład:
 $ ln test hard
 $ ln -s test symbolic
 $ ls -l
-total 20
--rw-r--r-- 1 bartlomiejkrawczyk bartlomiejkrawczyk 4246 Oct 18 19:39 README.md
--rw-r--r-- 1 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:32 copy
--rw-r--r-- 2 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:28 hard
-lrwxrwxrwx 1 bartlomiejkrawczyk bartlomiejkrawczyk    4 Oct 18 19:40 symbolic -> test
--rw-r--r-- 2 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:28 test
+razem 20
+-rw-r--r-- 1 usux5 usux    5 10-19 10:10 copy
+-rw-r--r-- 2 usux5 usux    5 10-19 10:10 hard
+-rw-r--r-- 1 usux5 usux 5014 10-19 10:11 README.md
+lrwxrwxrwx 1 usux5 usux    4 10-19 10:12 symbolic -> test
+-rw-r--r-- 2 usux5 usux    5 10-19 10:10 test
 ```
 
 2. Sprawdzić znaczenie praw dostępu rwx dla pliku zwykłego i katalogu. Jakie prawa własności i prawa dostępu do katalogu i znajdujących się w nim plików są konieczne (minimalny zestaw), aby wykonać operacje: cp, mv i rm na tych plikach? Wyniki przedstawić w tabeli. Sprawdzić uprawnienia potrzebne do usunięcia całej gałęzi drzewa katalogów (czyli katalogu wraz z zawartymi plikami) (2 pkt)
 
-komenda | katalog | plik
---------|---------|-----
-cp      | r-x     | r--
-mv      | -wx     | ---
-rm      | ---     | ---
+```sh
+~/$ cp source/file destination/file
+~/$ mv source/file destination/file
+```
 
-Aby usunąć gałąź drzewa katalogów trzeba mieć co najmniej uprawnienia do pisania i wykonywania danego katalogu oraz uprawnienia do pisania dla katalogu nadrzędnego.
+komenda | katalog źródłowy | katalog docelowy | plik
+--------|------------------|------------------|------
+cp      | --x              | -wx              | r--
+mv      | -wx              | -wx              | ---
+
+```sh
+~/directory$ rm file
+```
+
+komenda | katalog | plik
+--------|---------|------
+rm      | -wx     | ---
+
+```sh
+~/parent$ rm -rf child
+```
+
+komenda | katalog rodzic | katalog dziecko | plik
+--------|----------------|-----------------|------
+rm      | -wx            | rwx             | ---
+
 
 3. Porównać efekty utworzenia kopii pliku, nowego dowiązania i nowego dowiązania symbolicznego. (2 pkt)
 
 ```sh
-echo TEST > test
+echo test > test
 cp test copy
 ln -s test symbolic
 ln test hard
@@ -99,17 +121,17 @@ ln test hard
 
 ```sh
 $ ls -l
-total 20
--rw-r--r-- 1 bartlomiejkrawczyk bartlomiejkrawczyk 4719 Oct 18 19:43 README.md
--rw-r--r-- 1 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:32 copy
--rw-r--r-- 2 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:28 hard
-lrwxrwxrwx 1 bartlomiejkrawczyk bartlomiejkrawczyk    4 Oct 18 19:40 symbolic -> test
--rw-r--r-- 2 bartlomiejkrawczyk bartlomiejkrawczyk    5 Oct 18 19:28 test
+razem 20
+-rw-r--r-- 1 usux5 usux    5 10-19 10:10 copy
+-rw-r--r-- 2 usux5 usux    5 10-19 10:10 hard
+-rw-r--r-- 1 usux5 usux 4874 10-19 10:12 README.md
+lrwxrwxrwx 1 usux5 usux    4 10-19 10:12 symbolic -> test
+-rw-r--r-- 2 usux5 usux    5 10-19 10:10 test
 ```
 
 Kopia:
 - identyczna zawartość co plik kopiowany
-- 1 dowiązanie w inode
+- 1 dowiązanie w i-węźle
 
 Dowiązanie symboliczne:
 - program ls wyświetla ścieżkę, na którą plik wskazuje
@@ -117,12 +139,14 @@ Dowiązanie symboliczne:
 
 ```sh
 $ ls --inode
- 18327 README.md   48540 copy   48543 hard  274441 symbolic   48543 test
+2152604647 copy  2150583025 README.md  2150370953 test
+2150370953 hard  2155687914 symbolic
 ```
 
 Dowiązanie twarde:
 - program ls wyświetla zwiększoną ilość dowiązań do pliku
-- możliwe jest także sprawdzenie numeru inode (hard i test mają identyczny numer - wskazują na ten sam plik)
+- możliwe jest także sprawdzenie numeru inode 
+    - hard i test mają identyczny numer 2150370953 - wskazują na ten sam plik
 
 > Ile zużyto i-węzłów?
 
