@@ -99,6 +99,8 @@ komenda | katalog | plik
 --------|---------|------
 rm      | -wx     | ---
 
+> Sprawdzić uprawnienia potrzebne do usunięcia całej gałęzi drzewa katalogów (czyli katalogu wraz z zawartymi plikami)
+
 ```sh
 ~/parent$ rm -rf child
 ```
@@ -132,10 +134,15 @@ lrwxrwxrwx 1 usux5 usux    4 10-19 10:12 symbolic -> test
 Kopia:
 - identyczna zawartość co plik kopiowany
 - 1 dowiązanie w i-węźle
+- modyfikowanie zawartości nie wpływa na plik oryginalny
+- w katalogu tworzony jest dodatkowy plik o identycznej zawartości co poprzedni
+- nowy plik ma przydzielony nowy i-węzeł
 
 Dowiązanie symboliczne:
-- program ls wyświetla ścieżkę, na którą plik wskazuje
-- dowiązanie stanowi oddzielny plik (1 dowiązanie do inode)
+- program ls wyświetla ścieżkę, na którą plik wskazuje np. `symbolic -> test`
+- w pliku ustawiona jest dodatkowa flaga typu `l` np. lrwxrwxrwx
+- dowiązanie stanowi oddzielny plik (1 dowiązanie do i-węzła), którego zawartość to relatywna ścieżka, na którą wskazuje
+- program może sam decydować czy podążąć za dowiązaniami symbolicznymi
 
 ```sh
 $ ls --inode
@@ -147,6 +154,7 @@ Dowiązanie twarde:
 - program ls wyświetla zwiększoną ilość dowiązań do pliku
 - możliwe jest także sprawdzenie numeru inode 
     - hard i test mają identyczny numer 2150370953 - wskazują na ten sam plik
+- w trakcie tworzenia dowiązania twardego w katalogu zapisywane jest wskazanie na istniejący inode i zwiększana jest ilość dowiązań w i-węźle
 
 > Ile zużyto i-węzłów?
 
@@ -161,10 +169,12 @@ Możliwe jest utworzenie jedynie symbolicznego dowiązania do nie istniejącego 
 
 **find** - program pozwalający na przeszukiwanie hierarchii plików.
 
-TODO: zalecenie nie znane
+Zalecenia prowadzącego - wyszukać:
+- pliki zwykłe
+- prawa dostępu co najmniej 644
+- lista plików z atrybutami
 
-Przykład:
+Przykład: 
 ```sh
-find . -type d -group grupa -perm /g+r -exec chmod 700 {} +
+find . -type f -perm -644 -printf "%m %p\n"
 ```
-
