@@ -5,7 +5,7 @@
 1. Za pomocą polecenia ps obejrzeć listę procesów z bieżącej sesji i zidentyfikować ich atrybuty (zwrócić uwagę na priorytet i wartość nice). (1 pkt)
 
 ```sh
-$ ps -l -u usux5
+$ ps -l -u "$USER"
 F S   UID   PID  PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
 ```
 
@@ -33,29 +33,44 @@ $ ps -o pri,nice,command
 Zidentyfikować własne procesy i narysować drzewo dziedziczenia od procesu o identyfikatorze PID=1 do tych procesów.
 Zwrócić uwagę na stan poszczególnych procesów. (1 pkt)
 
+> Obejrzeć listę wszystkich procesów w systemie.
+
 ```sh
-$ pstree
+ps -e
 ```
 
-lub
+> Zidentyfikować własne procesy i narysować drzewo dziedziczenia od procesu o identyfikatorze PID=1 do tych procesów.
 
 ```sh
-$ ps -aef --forest
+$ ps -efu "$USER" --forest
+$ ps -e -u "$USER" -o pid,ppid,command --forest
+$ pstree "$USER"
 ```
 
 3. Sprawdzić reakcję procesów działających na pierwszym planie i w tle na wybrane sygnały. 
 Wykorzystując wbudowane polecenie powłoki trap (man zshbuiltins), zmienić domyślną obsługę sygnału SIGINT w bieżącej powłoce - ustawić ignorowanie sygnału oraz wykonywanie polecenia w reakcji na sygnał. 
 Sprawdzić, czy zmieni się obsługa sygnału w nowych procesach uruchamianych przez bieżącą powłokę w obydwu powyższych przypadkach. (1 pkt)
 
-Wyłączenie domyślnego działania po wywołaniu SIGINT:
+> zmienić domyślną obsługę sygnału SIGINT w bieżącej powłoce - ustawić ignorowanie sygnału
 ```sh
-trap '' SIGINT
+$ trap '' SIGINT
+```
+
+> zmienić domyślną obsługę sygnału SIGINT w bieżącej powłoce - ustawić wykonywanie polecenia w reakcji na sygnał
+```sh
+$ trap 'echo SIGINT' SIGINT
+```
+
+> Sprawdzić, czy zmieni się obsługa sygnału w nowych procesach uruchamianych przez bieżącą powłokę w obydwu powyższych przypadkach.
+
+```sh
+$ sleep 999
+ctrl+c (SIGINT)
 ```
 
 Długo trwający proces
 ```sh
 $ sleep 999 &
-$ ps
 ```
 
 ```sh
