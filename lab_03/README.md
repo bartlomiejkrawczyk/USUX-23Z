@@ -128,7 +128,20 @@ code─┬─chrome-sandbox───code───code
 Wykorzystując wbudowane polecenie powłoki trap (man zshbuiltins), zmienić domyślną obsługę sygnału SIGINT w bieżącej powłoce - ustawić ignorowanie sygnału oraz wykonywanie polecenia w reakcji na sygnał. 
 Sprawdzić, czy zmieni się obsługa sygnału w nowych procesach uruchamianych przez bieżącą powłokę w obydwu powyższych przypadkach. (1 pkt)
 
-> zmienić domyślną obsługę sygnału SIGINT w bieżącej powłoce - ustawić ignorowanie sygnału
+> Sprawdzić reakcję procesów działających na pierwszym planie i w tle na wybrane sygnały.
+
+```sh
+usux5@cad10[~/USUX]$ trap SIGINT
+usux5@cad10[~/USUX]$ 
+usux5@cad10[~/USUX]$ sleep 100
+^C
+usux5@cad10[~/USUX]$
+```
+
+Sygnał SIGINT powoduje zatrzymanie uruchomionego procesu.
+
+> Zmienić domyślną obsługę sygnału SIGINT w bieżącej powłoce - ustawić ignorowanie sygnału. Sprawdzić, czy zmieni się obsługa sygnału w nowych procesach uruchamianych przez bieżącą.
+
 ```sh
 $ trap '' SIGINT
 ```
@@ -136,6 +149,20 @@ $ trap '' SIGINT
 ```sh
 $ sleep 100     
 ^C^C
+```
+
+```sh
+usux5@cad10[~/USUX]$ sleep 1000
+^Z
+zsh: suspended  sleep 1000
+usux5@cad10[~/USUX]$ bg
+[1]    continued  sleep 1000
+usux5@cad10[~/USUX]$ jobs -l
+[1]    28434 running    sleep 1000
+usux5@cad10[~/USUX]$ kill -SIGINT 28434
+usux5@cad10[~/USUX]$ kill -SIGINT 28434
+usux5@cad10[~/USUX]$ jobs -l           
+[1]    28434 running    sleep 1000
 ```
 
 Przestaje działać przesłanie sygnału SIGINT - nie możliwe jest przerwanie procesu uruchomionego w danej powłoce wywołaniem ctrl+c. Podobnie nie działa przesyłanie sygnału SIGINT z innej konsoli.
@@ -165,7 +192,7 @@ usux5@cad10[~]$ ps
 
 Dopiero jeśli w procesie potomnym ustawimy ignorowanie sygnału przestanie działać przesyłanie SIGINT.
 
-> zmienić domyślną obsługę sygnału SIGINT w bieżącej powłoce - ustawić wykonywanie polecenia w reakcji na sygnał
+> Zmienić domyślną obsługę sygnału SIGINT w bieżącej powłoce - ustawić wykonywanie polecenia w reakcji na sygnał. Sprawdzić, czy zmieni się obsługa sygnału w nowych procesach uruchamianych przez bieżącą.
 ```sh
 $ trap 'echo SIGINT' SIGINT
 ```
@@ -187,6 +214,20 @@ SIGINT
 ```
 
 ```sh
+usux5@cad10[~]$ sleep 1000
+^Z
+zsh: suspended  sleep 1000
+usux5@cad10[~]$ jobs -l
+[1]  + 28677 suspended  sleep 1000
+usux5@cad10[~]$ bg
+[1]  + continued  sleep 1000
+usux5@cad10[~]$ jobs -l
+[1]  + 28677 running    sleep 1000
+usux5@cad10[~]$ kill -SIGINT 28677
+[1]  + interrupt  sleep 1000
+```
+
+```sh
 usux5@cad10[~]$ (trap 'echo test' SIGINT; sleep 10)
 ^Ctest
 usux5@cad10[~]$ (trap 'echo test' SIGINT; sleep 100) &
@@ -202,8 +243,6 @@ test
 test
 
 ```
-
-> Sprawdzić, czy zmieni się obsługa sygnału w nowych procesach uruchamianych przez bieżącą powłokę w obydwu powyższych przypadkach.
 
 ```sh
 usux5@cad10[~]$ sleep 100
