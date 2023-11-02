@@ -1,5 +1,10 @@
 # Użytkowanie systemu UNIX (USUX) - Ćwiczenie 3
 
+## Student
+```md
+Bartłomiej Krawczyk, 310774
+```
+
 ## Procesy i sygnały
 
 1. Za pomocą polecenia ps obejrzeć listę procesów z bieżącej sesji i zidentyfikować ich atrybuty (zwrócić uwagę na priorytet i wartość nice). (1 pkt)
