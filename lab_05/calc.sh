@@ -147,6 +147,9 @@ parse_factor() {
             parse_term
             VALUE="$FUNCTION_RETURN"
             PRODUCT=`expr $PRODUCT $OPERATION $VALUE 2> /dev/null`
+            if [ $? -eq 2 ]; then
+                signal_exception "Division by zero is undefined!"
+            fi
         else
             break
         fi
@@ -193,6 +196,10 @@ parse_number() {
         FUNCTION_RETURN="$EMPTY_VALUE"
     fi
 }
+
+if [ "$#" = 0 ]; then
+    signal_exception "Usage: $0 arg op ( arg op arg ) ..."
+fi
 
 parse
 RESULT="$FUNCTION_RETURN"
