@@ -2,14 +2,14 @@
 
 set -o noglob
 
-# NUMBER                  = INTEGER;
+# NUMBER                  = ["-"], INTEGER;
 # 
 # addition_operator       = "+" | "-";
 # multiplication_operator = "*" | "/";
 #
 # ARITHMETIC_EXPRESSION   = FACTOR, {addition_operator, FACTOR};
 # FACTOR                  = TERM, {multiplication_operator, TERM};
-# TERM                    = (["-"], SIMPLE_TYPE | PARENTHESES_EXPRESSION);
+# TERM                    = (NUMBER | PARENTHESES_EXPRESSION);
 #
 # PARENTHESES_EXPRESSION  = "(", ARITHMETIC_EXPRESSION, ")";
 
@@ -46,8 +46,6 @@ get_token_type() {
     local TOKEN=$1
     local RESULT=""
 
-    echo $TOKEN 1>&2
-
     case "$TOKEN" in
 
         \+|-)
@@ -83,24 +81,19 @@ get_token_type() {
             ;;
     esac
 
-    echo $RESULT 1>&2
-    echo $RESULT
+    FUNCTION_RETURN="$RESULT"
 }
 
 next_token() {
     set -- $ARGUMENTS
-
-    echo ARGUMENTS:  "$@" 1>&2
     
     if [ "$#" = 0 ]; then
         CURRENT_TOKEN="$EMPTY_VALUE"
         CURRENT_TOKEN_TYPE="$END_TOKEN_TYPE"
     else
         CURRENT_TOKEN="$1"
-        CURRENT_TOKEN_TYPE=$(get_token_type "$CURRENT_TOKEN")
-
-        echo Current token: "$CURRENT_TOKEN" 1>&2
-        echo Current token type: "$CURRENT_TOKEN_TYPE" 1>&2
+        get_token_type "$CURRENT_TOKEN"
+        CURRENT_TOKEN_TYPE="$FUNCTION_RETURN"
 
         shift;
         ARGUMENTS="$@"
@@ -109,13 +102,9 @@ next_token() {
 
 skip_if() {
     local TOKEN_TYPE=$1
-    echo "Current: $CURRENT_TOKEN_TYPE" 1>&2
-    echo "Expected: $TOKEN_TYPE" 1>&2
     if [ "$CURRENT_TOKEN_TYPE" != "$TOKEN_TYPE" ]; then
-        echo "Did not skip: $TOKEN" 1>&2
         return 1
     else
-        echo "Skipped: $TOKEN" 1>&2
         next_token
         return 0
     fi
@@ -123,70 +112,88 @@ skip_if() {
 
 handle_skip() {
     local TOKEN_TYPE="$1"
-    if skip_if "$TOKEN_TYPE"; then
+    if ! skip_if "$TOKEN_TYPE"; then
         signal_exception "Expected token type: $TOKEN_TYPE, but got: $CURRENT_TOKEN ($CURRENT_TOKEN_TYPE)"
     fi
 }
 
-parse_arithmetic_expression () {
+parse() {
     next_token
+    parse_arithmetic_expression
+}
+
+parse_arithmetic_expression () {
     parse_factor
-    local OPTIONAL_FACTOR="$FUNCTION_RETURN"
-    if [ "$OPTIONAL_FACTOR" = "$EMPTY_VALUE" ]; then
-        FUNCTION_RETURN="$EMPTY_VALUE"
-    else
-        local SUM=$OPTIONAL_FACTOR
-        while [ "$CURRENT_TOKEN_TYPE" != "$END_TOKEN_TYPE" ]; do
-            local OPERATION="$CURRENT_TOKEN"
-            if skip_if "$ADDITION_OPERATOR_TYPE" ; then
-                parse_factor
-                VALUE="$FUNCTION_RETURN"
-                # TODO: handle empty value
-                echo "$PRODUCT $OPERATION $VALUE" 1>&2
-                SUM=`expr $SUM $OPERATION $VALUE 2> /dev/null`
-            else
-                break
-            fi
-        done
-        FUNCTION_RETURN="$SUM"
-    fi
+    local SUM="$FUNCTION_RETURN"
+    while [ "$CURRENT_TOKEN_TYPE" != "$END_TOKEN_TYPE" ]; do
+        local OPERATION="$CURRENT_TOKEN"
+        if skip_if "$ADDITION_OPERATOR_TYPE" ; then
+            parse_factor
+            VALUE="$FUNCTION_RETURN"
+            SUM=`expr $SUM $OPERATION $VALUE 2> /dev/null`
+        else
+            break
+        fi
+    done
+    FUNCTION_RETURN="$SUM"
 }
 
 parse_factor() {
     parse_term
-    local OPTIONAL_TERM="$FUNCTION_RETURN"
-    if [ "$OPTIONAL_TERM" = "$EMPTY_VALUE" ]; then
-        FUNCTION_RETURN="$EMPTY_VALUE"
+    local PRODUCT="$FUNCTION_RETURN"
+    while [ "$CURRENT_TOKEN_TYPE" != "$END_TOKEN_TYPE" ]; do
+        local OPERATION="$CURRENT_TOKEN"
+        if skip_if "$MULTIPLICATION_OPERATOR_TYPE"; then
+            parse_term
+            VALUE="$FUNCTION_RETURN"
+            PRODUCT=`expr $PRODUCT $OPERATION $VALUE 2> /dev/null`
+        else
+            break
+        fi
+    done
+    FUNCTION_RETURN="$PRODUCT"
+}
+
+parse_term() {
+    parse_parentheses_expression
+    if [ $FUNCTION_RETURN != $EMPTY_VALUE ]; then
+        return 0
+    fi
+
+    parse_number
+    if [ $FUNCTION_RETURN != $EMPTY_VALUE ]; then
+        return 0
+    fi
+
+    signal_exception "Expected any of tokens: (, -, [0-9]*"
+}
+
+parse_parentheses_expression() {
+    if skip_if $OPEN_PARENTHESES_TYPE; then
+        parse_arithmetic_expression
+        RESULT="$FUNCTION_RETURN"
+        handle_skip $CLOSED_PARENTHESES_TYPE
+        FUNCTION_RETURN=$RESULT
     else
-        local PRODUCT=$OPTIONAL_TERM
-        while [ "$CURRENT_TOKEN_TYPE" != "$END_TOKEN_TYPE" ]; do
-            local OPERATION="$CURRENT_TOKEN"
-            if skip_if "$MULTIPLICATION_OPERATOR_TYPE"; then
-                parse_term
-                VALUE="$FUNCTION_RETURN"
-                # TODO: handle empty value
-                echo "$PRODUCT $OPERATION $VALUE" 1>&2
-                PRODUCT=`expr $PRODUCT $OPERATION $VALUE 2> /dev/null`
-            else
-                break
-            fi
-        done
-        FUNCTION_RETURN="$PRODUCT"
+        FUNCTION_RETURN="$EMPTY_VALUE"
     fi
 }
 
-# parse_term -> int or null
-parse_term() {
-    FUNCTION_RETURN="$CURRENT_TOKEN"
-    next_token
+parse_number() {
+    local NEGATION=""
+    if [ "$CURRENT_TOKEN" = "-" ]; then
+        NEGATION="-"
+        next_token
+    fi
+    if [ "$CURRENT_TOKEN_TYPE" = "$INTEGER_TYPE" ]; then
+        local RESULT="$NEGATION$CURRENT_TOKEN"
+        next_token
+        FUNCTION_RETURN="$RESULT"
+    else
+        FUNCTION_RETURN="$EMPTY_VALUE"
+    fi
 }
 
-# parse_parentheses_expression -> int or null
-parse_parentheses_expression() {
-    echo "1"
-}
-
-parse_arithmetic_expression
+parse
 RESULT="$FUNCTION_RETURN"
 echo "$RESULT"
-
