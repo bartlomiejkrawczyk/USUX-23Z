@@ -52,3 +52,4 @@ Skrypt powinien:
     - brak domknięcia nawiasów,
     - inne
 - podawać poprawną postać składni w przypadku wywołania bez argumentów lub wykrycia błędów.
+
