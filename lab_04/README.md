@@ -1,5 +1,10 @@
 # Użytkowanie systemu UNIX (USUX) - Ćwiczenie 4
 
+## Student
+```md
+Bartłomiej Krawczyk, 310774
+```
+
 ## Środowisko
 
 1. Zmodyfikować (lub stworzyć) lokalne pliki konfiguracyjne powłoki zsh w celu :
