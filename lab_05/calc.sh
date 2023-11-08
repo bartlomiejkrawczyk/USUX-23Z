@@ -20,6 +20,8 @@ OPEN_PARENTHESES_TYPE="OPEN_PARENTHESES"
 CLOSED_PARENTHESES_TYPE="CLOSED_PARENTHESES"
 END_TOKEN_TYPE="END_FILE"
 
+ALREADY_PARSED=""
+
 ARGUMENTS="$@"
 
 CURRENT_TOKEN=""
@@ -31,6 +33,8 @@ FUNCTION_RETURN=$EMPTY_VALUE
 
 signal_exception() {
     local MESSAGE="$1"
+    echo "Exception when parsing: $CURRENT_TOKEN"
+    echo "Already parsed: $ALREADY_PARSED"
     echo "$MESSAGE" 1>&2
     exit 1
 }
@@ -84,6 +88,8 @@ get_token_type() {
 
 next_token() {
     set -- $ARGUMENTS
+
+    ALREADY_PARSED="$ALREADY_PARSED $CURRENT_TOKEN"
     
     if [ "$#" = 0 ]; then
         CURRENT_TOKEN="$EMPTY_VALUE"
@@ -190,6 +196,8 @@ parse_number() {
         local RESULT="$NEGATION$CURRENT_TOKEN"
         next_token
         FUNCTION_RETURN="$RESULT"
+    elif [ "$NEGATION" = "-" ]; then
+        signal_exception "Expected number: [0-9]*"
     else
         FUNCTION_RETURN="$EMPTY_VALUE"
     fi
