@@ -33,8 +33,10 @@ FUNCTION_RETURN=$EMPTY_VALUE
 
 signal_exception() {
     local MESSAGE="$1"
-    echo "Exception when parsing: $CURRENT_TOKEN"
-    echo "Already parsed: $ALREADY_PARSED"
+    if [ "$ALREADY_PARSED" != "" ]; then
+        echo "Exception when parsing: $CURRENT_TOKEN"
+        echo "Already parsed: $ALREADY_PARSED"
+    fi
     echo "$MESSAGE" 1>&2
     exit 1
 }
@@ -124,6 +126,9 @@ handle_skip() {
 parse() {
     next_token
     parse_arithmetic_expression
+    if [ "$CURRENT_TOKEN_TYPE" != "$END_TOKEN_TYPE" ]; then
+        signal_exception "Unexpected token. Further parsing will result in an invalid expression"
+    fi
 }
 
 parse_arithmetic_expression () {
