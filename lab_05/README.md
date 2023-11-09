@@ -1,7 +1,7 @@
 # Użytkowanie systemu UNIX (USUX) - Ćwiczenie 5
 
 ## Student
-```md
+```
 Bartłomiej Krawczyk, 310774
 ```
 
@@ -17,7 +17,7 @@ $ ./calc.sh 2 + 2
 
 Taki plik musi posiadać:
 - prawa dostępu do wykonywania np. `-rwxr-xr-x`
-- shebang z interpreterem potrzebnym do jego uruchomienia np. `#!/bin/bash`
+- shebang z interpreterem potrzebnym do jego uruchomienia np. `#!/bin/bash` lub domyślnie zostanie wykorzystany interpreter `/bin/sh`
 
 Jeśli folder, w którym znajduje się plik dodany jest do zmiennej środowiskowej `$PATH`. Możliwe będzie także wywołanie poprzez podanie nazwy skryptu:
 ```sh

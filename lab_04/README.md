@@ -1,7 +1,7 @@
 # Użytkowanie systemu UNIX (USUX) - Ćwiczenie 4
 
 ## Student
-```md
+```
 Bartłomiej Krawczyk, 310774
 ```
 
@@ -34,6 +34,8 @@ Katalogi wymienione w zmiennej $PATH są przeszukiwane od lewej do prawej.
 
 - `$PATH:$HOME/skrypt` - katalog ~/skrypt będzie przeszukiwany na końcu
 - `$HOME/skrypt:$PATH` - katalog ~/skrypt będzie przeszukiwany w pierwszej kolejności
+
+W trakcie wywoływania zostanie wykonany pierwszy napotkany program o zadanej nazwie.
 
 > dodania aliasa na polecenie wyświetlania listy wszystkich własnych procesów
 
@@ -94,6 +96,16 @@ Zmienne lokalne shella:
 
 ```sh
 $ ls -dA .*
+.bash_history  .gconfd          .icons         .ssh
+.cache         .gimp-2.6        .lesshst       .themes
+.cadence       .gnome2          .libmgr        .thumbnails
+.cdsenv        .gnome2_private  .local         .viminfo
+.cds_pvsui     .gnote           .mozilla       .vscode
+.config        .gnupg           .nautilus      .xsession-errors
+.dbus          .gtk-bookmarks   .nv            .xsession-errors.old
+.esd_auth      .gtkrc           .pki           .zcompdump
+.fontconfig    .gvfs            .pulse         .zshenv
+.gconf         .ICEauthority    .pulse-cookie  .zshrc
 ```
 
 Użyte flagi:
@@ -112,14 +124,14 @@ Wyjaśnić i zademonstrować jak zastosowanie powyższych znaków wpływa na int
 
 > Przedstawić przykłady ilustrujące działanie
 
-- cudzysłów - pozwala na grupowanie wyrazów. Tak powstałe wyrażenia są jeszcze rozwijane.
+- cudzysłów - pozwala na grupowanie wyrazów. Tak powstałe wyrażenia są jeszcze rozwijane
 ```sh
 $ VAR="* Current directory for user $USER: `pwd` *"
 $ echo $VAR
 * Current directory for user usux5: /lab/usux5/USUX *
 ```
 
-- apostrof - pozwala na grupowanie wyrazów w wyrażenia. Nie prowadzi do rozwijania wyrażeń.
+- apostrof - pozwala na grupowanie wyrazów w wyrażenia. Nie prowadzi do rozwijania wyrażeń
 ```sh
 $ echo 'sudo rm -rf $HOME/* && echo `pwd`'                     
 sudo rm -rf $HOME/* && echo `pwd`
