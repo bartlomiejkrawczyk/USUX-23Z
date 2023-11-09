@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Bartłomiej Krawczyk, 310774
+
 set -o noglob
 
 # NUMBER                  = ["-"], INTEGER;
