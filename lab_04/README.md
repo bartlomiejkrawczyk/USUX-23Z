@@ -20,7 +20,12 @@ export PATH="$PATH:$HOME/skrypt"
 ```
 
 ```sh
-$ source ~/.zshrc
+[~/skrypt]$ source ~/.zshrc
+[~/skrypt]$ nano test.sh
+[~/skrypt]$ chmod +x ./test.sh 
+[~/skrypt]$ cd ..
+[~]$ test.sh
+Test
 ```
 
 > Wyjaśnić jak sposób wykonania tej modyfikacji wpływa na kolejność przeszukiwania katalogów
@@ -40,6 +45,13 @@ alias psu='ps -lu "$USER"'
 
 ```sh
 $ source ~/.zshrc
+$ psu          
+F S   UID   PID  PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+1 S  3005 27348     1  0  80   0 - 79439 poll_s ?        00:00:00 gnome-keyring-
+4 S  3005 27394 27182  0  80   0 - 142589 poll_s ?       00:00:00 mate-session
+1 S  3005 27403     1  0  80   0 - 17397 poll_s ?        00:00:00 dbus-launch
+1 S  3005 27404     1  0  80   0 - 20063 ep_pol ?        00:00:00 dbus-daemon
+0 S  3005 27427     1  0  80   0 - 97495 poll_s ?        00:00:00 imsettings-dae
 ```
 
 2. Sprawdzić i zaprezentować podstawową różnicę między zmiennymi środowiska i zmiennymi lokalnymi shella. (1 pkt)
@@ -53,6 +65,8 @@ TEST=var
 $ /bin/bash
 $ env | grep TEST
 TEST=var
+$ echo $TEST
+var
 ```
 
 Zmienne środowiskowe:
@@ -98,32 +112,33 @@ Wyjaśnić i zademonstrować jak zastosowanie powyższych znaków wpływa na int
 
 > Przedstawić przykłady ilustrujące działanie
 
-- cudzysłów - pozwala na grupowanie wyrazów. Tak powstałe wyrażenia są następnie rozwijane.
+- cudzysłów - pozwala na grupowanie wyrazów. Tak powstałe wyrażenia są jeszcze rozwijane.
 ```sh
-$ VAR="Home directory for user $USER: $(pwd)"
+$ VAR="* Current directory for user $USER: `pwd` *"
 $ echo $VAR
+* Current directory for user usux5: /lab/usux5/USUX *
 ```
 
-- apostrof - pozwala na grupowanie wyrazów w wyrażenia. Nie wspiera rozwijania poszczególnych wyrażeń.
+- apostrof - pozwala na grupowanie wyrazów w wyrażenia. Nie prowadzi do rozwijania wyrażeń.
 ```sh
-$ echo 'sudo rm -rf $HOME'                     
-sudo rm -rf $HOME
+$ echo 'sudo rm -rf $HOME/* && echo `pwd`'                     
+sudo rm -rf $HOME/* && echo `pwd`
 ```
 
 - odwrotny apostrof - pozwala na wywołanie innego programu, a jego rezultat umieszcza w wyrażeniu. Jest tożsame z wywołaniem poprzez `$(command)`
 ```sh
-$ VAR=`pwd`
-$ echo $VAR
+$ VAR=`echo Current directory for user $USER: \`pwd\`, it contains: *`
+$ $ echo $VAR
+Current directory for user usux5: /lab/usux5/USUX, it contains: lab_01 lab_02 lab_03 lab_04 lab_05
 ```
 
 - backslash - zapobiega ewaluacji znaku następnego
 ```sh
 $ echo *
 README.md
-$ echo \*
-*
+$ echo \* \$ \`
+* $ `
 ```
-test
 
 Ewaluacja | \$             | \` \`                                                          | \*
 ----------|----------------|----------------------------------------------------------------|-------------------------------------------
