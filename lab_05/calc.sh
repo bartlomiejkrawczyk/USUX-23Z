@@ -43,7 +43,7 @@ signal_exception() {
 
 is_integer() {
     local TOKEN=$1
-    [[ "$TOKEN" =~ ^[0-9]+$ ]]
+    [[ "$TOKEN" =~ ^-?[0-9]+$ ]]
 }
 
 get_token_type() {
@@ -68,7 +68,7 @@ get_token_type() {
             RESULT=$CLOSED_PARENTHESES_TYPE
             ;;
 
-        [0-9]*)
+        [-0-9]*)
             if $(is_integer $TOKEN); then
                 RESULT=$INTEGER_TYPE
             else
@@ -177,7 +177,7 @@ parse_term() {
         return 0
     fi
 
-    signal_exception "Expected any of tokens: (, -, [0-9]*"
+    signal_exception "Expected any of tokens: (, -?[0-9]*"
 }
 
 parse_parentheses_expression() {
@@ -192,17 +192,10 @@ parse_parentheses_expression() {
 }
 
 parse_number() {
-    local NEGATION=""
-    if [ "$CURRENT_TOKEN" = "-" ]; then
-        NEGATION="-"
-        next_token
-    fi
     if [ "$CURRENT_TOKEN_TYPE" = "$INTEGER_TYPE" ]; then
         local RESULT="$NEGATION$CURRENT_TOKEN"
         next_token
         FUNCTION_RETURN="$RESULT"
-    elif [ "$NEGATION" = "-" ]; then
-        signal_exception "Expected number: [0-9]*"
     else
         FUNCTION_RETURN="$EMPTY_VALUE"
     fi
