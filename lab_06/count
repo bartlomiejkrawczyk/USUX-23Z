@@ -1,0 +1,90 @@
+#!/bin/bash
+
+set -o noglob
+
+usage() {
+    echo "Usage: $0 [-R] directory [type]" 1>&2
+}
+
+signal_exception() {
+    local MESSAGE="$1"
+    echo "$MESSAGE" 1>&2
+    usage
+    exit 2
+}
+
+RECURSIVE="n"
+POSITIONAL_ARGUMENTS=()
+
+while [[ $# != 0 ]]; do
+    case "$1" in
+        -R)
+            RECURSIVE="y"
+            shift
+            ;;
+
+        -*)
+            signal_exception "Provided flag $1 is not recognized"
+            ;;
+
+        *)
+            POSITIONAL_ARGUMENTS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL_ARGUMENTS[@]}"
+
+if [[ "$#" > 2 || "$#" == 0 ]]; then
+    signal_exception "Wrong number of arguments!"
+fi
+
+DIRECTORY="$1"
+
+if [[ ! -d "$DIRECTORY" ]]; then
+    signal_exception "Provided directory $DIRECTORY does not exist"
+fi
+
+if [[ ! -r "$DIRECTORY" ]]; then
+    signal_exception "User does not have read persmission for directory $DIRECTORY"
+fi
+
+if [[ ! -x "$DIRECTORY" ]]; then
+    signal_exception "User does not have execute persmission for directory $DIRECTORY"
+fi
+
+# File is of type c:
+# b      block (buffered) special
+# c      character (unbuffered) special
+# d      directory
+# p      named pipe (FIFO)
+# f      regular file
+# l      symbolic link; this is never true if the -L option
+#         or the -follow option is in effect, unless the
+#         symbolic link is broken.  If you want to search for
+#         symbolic links when -L is in effect, use -xtype.
+# s      socket
+
+SUPPORTED_TYPES=( "b" "c" "d" "p" "f" "l" "s" )
+
+if [[ $# == 2 ]]; then
+    TYPE="$2"
+
+    echo "${SUPPORTED_TYPES[@]}" | grep -qw "$TYPE"
+    if [[ "$?" != 0 ]]; then
+        signal_exception "Provided type: $TYPE is not supported"
+    fi
+else
+    TYPE="b,c,d,p,f,l,s"
+fi
+
+if [[ "$RECURSIVE" = "n" ]]; then
+    MAX_DEPTH=( "-maxdepth" "1" )
+else
+    MAX_DEPTH=()
+fi
+
+COUNT=$(find "$DIRECTORY" "${MAX_DEPTH[@]}" -type "$TYPE" ! -name '.' ! -name '..' | grep -c ^)
+
+echo "$COUNT"
