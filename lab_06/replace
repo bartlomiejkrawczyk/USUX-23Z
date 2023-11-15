@@ -1,0 +1,42 @@
+#!/bin/bash
+
+set -o noglob
+
+usage() {
+    echo "Usage: $0 file text1 text2" 1>&2
+}
+
+signal_exception() {
+    local MESSAGE="$1"
+    echo "$MESSAGE" 1>&2
+    usage
+    exit 2
+}
+
+
+if [[ $# != 3 ]]; then
+    signal_exception "Wrong number of arguments!"
+fi
+
+FILE="$1"
+TEXT_1="$2"
+TEXT_2="$3"
+
+if [[ ! -f "$FILE" ]]; then
+    signal_exception "File $FILE does not exist!"
+fi
+
+if [[ ! -r "$FILE" ]]; then
+    signal_exception "User does not have permission to read $FILE"
+fi
+
+NUMBER=1
+NEW_FILE="$FILE.$NUMBER"
+while [[ -f "$NEW_FILE"  ]]; do
+    NUMBER=$(($NUMBER + 1))
+    NEW_FILE="$FILE.$NUMBER"
+done
+
+COMMAND="s/$TEXT_1/$TEXT_2/g"
+
+sed "$COMMAND" "$FILE" > "$NEW_FILE"

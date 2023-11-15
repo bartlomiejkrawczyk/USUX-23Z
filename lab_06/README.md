@@ -16,7 +16,7 @@ zamien plik tekst1 tekst2
 
 Wszystkie wystąpienia fragmentu `tekst1` w pliku powinny być zastąpione przez `tekst2`. Plik oryginalny pozostaje bez zmian, a zmodyfikowany tekst należy zapisać w nowym pliku o nazwie:  `plik.n`, gdzie n oznacza kolejny numer, np. `plik.1` (jeśli `plik.1` już istnieje, to `plik.2` itd.).
 
-Napisać skrypt wywoływany w następujący sposób:
+2. Napisać skrypt wywoływany w następujący sposób:
 ```sh
 licz [-R] katalog [typ]
 ```
