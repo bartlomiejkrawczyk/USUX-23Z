@@ -19,8 +19,14 @@ if [[ $# != 3 ]]; then
 fi
 
 FILE="$1"
-TEXT_1="$2"
-TEXT_2="$3"
+
+escape_slashes() {
+    local TEXT="$1"
+    echo "$TEXT" | sed "s#/#\\\/#g"
+}
+
+TEXT_1=$(escape_slashes "$2")
+TEXT_2=$(escape_slashes "$3")
 
 if [[ ! -f "$FILE" ]]; then
     signal_exception "File $FILE does not exist!"
