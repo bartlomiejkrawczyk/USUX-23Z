@@ -1,0 +1,87 @@
+#!/bin/bash
+
+set -o noglob
+
+usage() {
+    echo "Usage: $0 [-R] directory [type]" 1>&2
+}
+
+signal_exception() {
+    local MESSAGE="$1"
+    echo "$MESSAGE" 1>&2
+    usage
+    exit 2
+}
+
+ALL=0
+POSITIONAL_ARGUMENTS=()
+
+
+while [[ $# != 0 ]]; do
+    case "$1" in
+        -a)
+            ALL=1
+            shift
+            ;;
+
+        -*)
+            signal_exception "Provided flag $1 is not recognized"
+            ;;
+
+        *)
+            POSITIONAL_ARGUMENTS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL_ARGUMENTS[@]}"
+
+
+if [[ "$#" < 1 ]]; then
+    signal_exception "Wrong number of arguments!"
+fi
+
+FILE="$1"
+shift
+
+if [[ ! -f "$FILE" ]]; then
+    signal_exception "Provided file $FILE does not exist"
+fi
+
+if [[ ! -r "$FILE" ]]; then
+    signal_exception "User does not have read persmission for file $FILE"
+fi
+
+for COLUMN in "$@"; do
+    if [[ ! "$COLUMN" =~ ^[0-9]+ ]]; then
+        signal_exception "Column numbers should be integers, but found $COLUMN"
+    fi
+done
+
+COLUMNS="$@"
+
+
+awk -F " |\t" -v all="$ALL" -v COLUMNS="$COLUMNS" \
+'BEGIN {
+    ALL_SUM = 0;
+    split(COLUMNS, COLUMNS_ARRAY, " ");
+}
+{
+    ROW_SUM = 0;
+    if (length(COLUMNS_ARRAY) == 0) {
+        for(INDEX = 1; INDEX <= NF; ++INDEX) { 
+            ROW_SUM += $INDEX
+        };
+    } else {
+        for(INDEX = 1; INDEX <= length(COLUMNS_ARRAY); ++INDEX) {
+            ROW_SUM += $COLUMNS_ARRAY[INDEX]
+        };
+    }
+    ALL_SUM += ROW_SUM;
+    print ROW_SUM;
+}
+END {
+    if (all == 1)
+        print ALL_SUM;
+}' "$FILE"
