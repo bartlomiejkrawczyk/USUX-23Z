@@ -62,26 +62,26 @@ done
 COLUMNS="$@"
 
 
-awk -F " |\t" -v all="$ALL" -v COLUMNS="$COLUMNS" \
+awk -F " |\t" -v ALL="$ALL" -v COLUMNS="$COLUMNS" \
 'BEGIN {
-    ALL_SUM = 0;
-    split(COLUMNS, COLUMNS_ARRAY, " ");
+    ALL_SUM = 0
+    split(COLUMNS, COLUMNS_ARRAY, " ")
 }
 {
-    ROW_SUM = 0;
+    ROW_SUM = 0
     if (length(COLUMNS_ARRAY) == 0) {
-        for(INDEX = 1; INDEX <= NF; ++INDEX) { 
-            ROW_SUM += $INDEX
-        };
+        for(i = 1; i <= NF; ++i) { 
+            ROW_SUM += $i
+        }
     } else {
-        for(INDEX = 1; INDEX <= length(COLUMNS_ARRAY); ++INDEX) {
-            ROW_SUM += $COLUMNS_ARRAY[INDEX]
-        };
+        for (i in COLUMNS_ARRAY) {
+            ROW_SUM += $COLUMNS_ARRAY[i]
+        }
     }
-    ALL_SUM += ROW_SUM;
-    print ROW_SUM;
+    ALL_SUM += ROW_SUM
+    print ROW_SUM
 }
 END {
-    if (all == 1)
-        print ALL_SUM;
+    if (ALL == 1)
+        print ALL_SUM
 }' "$FILE"
