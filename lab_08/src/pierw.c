@@ -6,6 +6,7 @@ double Pierw(double a, double b, double delta, int flaga)
 		return (-b - sqrt(delta))/2*a;
 	else if (flaga == 2)
 		return (-b + sqrt(delta))/2*a;
+	exit(1);
 }
 
 #ifdef ZESPOLONE
