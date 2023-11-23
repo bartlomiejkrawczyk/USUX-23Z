@@ -62,7 +62,7 @@ done
 COLUMNS="$@"
 
 
-awk -F " |\t" -v ALL="$ALL" -v COLUMNS="$COLUMNS" \
+awk -v ALL="$ALL" -v COLUMNS="$COLUMNS" \
 'BEGIN {
     ALL_SUM = 0
     split(COLUMNS, COLUMNS_ARRAY, " ")
@@ -75,13 +75,14 @@ awk -F " |\t" -v ALL="$ALL" -v COLUMNS="$COLUMNS" \
         }
     } else {
         for (i in COLUMNS_ARRAY) {
-            ROW_SUM += $COLUMNS_ARRAY[i]
+            if (COLUMNS_ARRAY[i])
+                ROW_SUM += $COLUMNS_ARRAY[i]
         }
     }
     ALL_SUM += ROW_SUM
     print ROW_SUM
 }
 END {
-    if (ALL == 1)
+    if (ALL)
         print ALL_SUM
 }' "$FILE"
