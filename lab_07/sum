@@ -3,7 +3,7 @@
 set -o noglob
 
 usage() {
-    echo "Usage: $0 [-R] directory [type]" 1>&2
+    echo "Usage: $0 [-a] file [column1 column2 ...]" 1>&2
 }
 
 signal_exception() {
@@ -54,7 +54,7 @@ if [[ ! -r "$FILE" ]]; then
 fi
 
 for COLUMN in "$@"; do
-    if [[ ! "$COLUMN" =~ ^[0-9]+ ]]; then
+    if [[ ! "$COLUMN" =~ ^[0-9]+$ ]]; then
         signal_exception "Column numbers should be integers, but found $COLUMN"
     fi
 done
