@@ -87,6 +87,6 @@ else
     MAX_DEPTH=()
 fi
 
-COUNT=$(find "$DIRECTORY" "${MAX_DEPTH[@]}" "${TYPE_ARGS[@]}" ! -name '.' ! -name '..' | grep -c ^)
+COUNT=$(find "$DIRECTORY" "${MAX_DEPTH[@]}" "${TYPE_ARGS[@]}" ! -name '.' ! -name '..' 2>/dev/null | grep -c ^)
 
 echo "$COUNT"
