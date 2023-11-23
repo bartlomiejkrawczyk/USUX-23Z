@@ -68,6 +68,8 @@ fi
 
 SUPPORTED_TYPES=( "b" "c" "d" "p" "f" "l" "s" )
 
+TYPE_ARGS=()
+
 if [[ $# == 2 ]]; then
     TYPE="$2"
 
@@ -75,8 +77,8 @@ if [[ $# == 2 ]]; then
     if [[ "$?" != 0 ]]; then
         signal_exception "Provided type: $TYPE is not supported"
     fi
-else
-    TYPE="b,c,d,p,f,l,s"
+
+    TYPE_ARGS=("-type" "$TYPE")
 fi
 
 if [[ "$RECURSIVE" = "n" ]]; then
@@ -85,6 +87,6 @@ else
     MAX_DEPTH=()
 fi
 
-COUNT=$(find "$DIRECTORY" "${MAX_DEPTH[@]}" -type "$TYPE" ! -name '.' ! -name '..' | grep -c ^)
+COUNT=$(find "$DIRECTORY" "${MAX_DEPTH[@]}" "${TYPE_ARGS[@]}" ! -name '.' ! -name '..' | grep -c ^)
 
 echo "$COUNT"
