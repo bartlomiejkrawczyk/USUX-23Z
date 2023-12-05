@@ -39,7 +39,7 @@ $ tree
 > skompilować wszystkie pliki źródłowe i utworzyć z nich program wynikowy o nazwie `prog`,
 
 ```sh
-$ gcc src/*.c -Iinclude -Wall -Wextra -pedantic -Werror -lm -o prog
+$ gcc src/*.c -Iinclude -lm -o prog
 ```
 
 ```sh
@@ -51,10 +51,10 @@ x2 = 1.000000
 > porównać rozmiar pliku wynikowego otrzymanego po kompilacji z włączoną i wyłączoną optymalizacją,
 
 ```sh
-$ gcc src/*.c -O0 -Iinclude -Wall -Wextra -pedantic -Werror -lm -o prog
+$ gcc src/*.c -O0 -Iinclude -lm -o prog
 $ ls -la prog
 -rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 16312 Nov 16 13:12 prog
-$ gcc src/*.c -O3 -Iinclude -Wall -Wextra -pedantic -Werror -lm -o prog
+$ gcc src/*.c -O3 -Iinclude -lm -o prog
 $ ls -la prog
 -rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 16312 Nov 16 13:13 prog
 ```
@@ -62,14 +62,14 @@ $ ls -la prog
 > znaleźć w kodzie źródłowym makro sterujące procesem prekompilacji i wykorzystując odpowiednią opcję programu `gcc` wykonać punkt 1b w dwóch wersjach
 
 ```sh
-$ gcc -DZESPOLONE src/*.c -Iinclude -Wall -Wextra -pedantic -Werror  -lm -o prog
+$ gcc -DZESPOLONE src/*.c -Iinclude  -lm -o prog
 $ ./prog 1 1 1
 x1 = -0.500000 + -0.866025j
 x2 = -0.500000 + 0.866025j
 ```
 
 ```sh
-$ gcc -UZESPOLONE src/*.c -Iinclude -Wall -Wextra -pedantic -Werror  -lm -o prog
+$ gcc -UZESPOLONE src/*.c -Iinclude  -lm -o prog
 $ ./prog 1 1 1
 Brak pierwiastkow rzeczywistych.
 ```
@@ -86,7 +86,7 @@ $ ar -rv libusux.a delta.o pierw.o
 
 > wykorzystać stworzoną bibliotekę do utworzenia tego samego programu co w punkcie 1b.
 ```sh
-$ gcc src/rkw.c libusux.a -Iinclude -lm -o prog_libusux_a
+$ gcc src/rkw.c libusux.a -Iinclude -lm -o prog
 ```
 
 3. Posługując się programem `gcc` wykonać operacje:
@@ -105,7 +105,7 @@ $ gcc -shared *.o -o libusux.so
 > wykorzystać stworzoną bibliotekę do utworzenia tego samego programu co w punkcie 1b.
 
 ```sh
-$ gcc src/rkw.c -L. -Iinc -lm -lusux -o prog_libusux_so
+$ gcc src/rkw.c -L. -Iinclude -lm -lusux -o prog
 ```
 
 > zmodyfikować ścieżkę poszukiwań bibliotek, aby umożliwić wykonywanie programu.
@@ -155,7 +155,7 @@ Kompilacja bez tablicy symboli jest nie możliwa.
 > stworzyć program `prog` w taki sposób by umożliwić śledzenie jego pracy za pomocą `gdb`,
 
 ```sh
-$ gcc src/*.c -Iinclude -Wall -Wextra -pedantic -Werror -ggdb -lm -o prog
+$ gcc src/*.c -Iinclude -ggdb -lm -o prog
 ```
 -ggdb lub -g
 
