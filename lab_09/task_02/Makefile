@@ -32,8 +32,10 @@ real: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(REAL_LINK_FLAGS)
 
 complex: export BUILD_PATH := build/complex
 complex: export BINARY_PATH := bin/complex
+complex: export LIBRARY_PATH := lib/complex
 real: export BUILD_PATH := build/real
 real: export BINARY_PATH := bin/real
+real: export LIBRARY_PATH := lib/real
 
 SOURCES = $(shell find $(SOURCE_PATH) -name '*.$(SOURCE_EXTENSION)' ! -name '$(MAIN_FILE)')
 
@@ -62,6 +64,7 @@ dirs:
 	@echo "Creating directories"
 	@mkdir -p $(dir $(OBJECTS))
 	@mkdir -p $(BINARY_PATH)
+	@mkdir -p $(LIBRARY_PATH)
 
 .PHONY: clean
 clean:
@@ -70,18 +73,19 @@ clean:
 	@echo "Deleting build and bin directories"
 	@$(RM) -r build
 	@$(RM) -r bin
+	@$(RM) -r lib
 
 $(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXTENSION)
 	@echo "Compiling: $< -> $@"
 	$(CMD_PREFIX)$(CC) $(CFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
 
-$(BUILD_PATH)/lib$(LIBRARY_NAME).a: $(OBJECTS)
-	@echo "Making library: $(BUILD_PATH)/lib$(LIBRARY_NAME).a from: $^"
-	$(CMD_PREFIX)ar -r $(BUILD_PATH)/lib$(LIBRARY_NAME).a $^ 2>/dev/null
+$(LIBRARY_PATH)/lib$(LIBRARY_NAME).a: $(OBJECTS)
+	@echo "Making library: $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a from: $^"
+	$(CMD_PREFIX)ar -r $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a $^ 2>/dev/null
 
-$(BINARY_PATH)/$(BINARY_NAME): $(BUILD_PATH)/lib$(LIBRARY_NAME).a $(MAIN_OBJECT)
+$(BINARY_PATH)/$(BINARY_NAME): $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a $(MAIN_OBJECT)
 	@echo "Linking: $@"
-	$(CMD_PREFIX)$(CC) $(MAIN_OBJECT) $(BUILD_PATH)/lib$(LIBRARY_NAME).a $(LDFLAGS) -o $@
+	$(CMD_PREFIX)$(CC) $(MAIN_OBJECT) $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a $(LDFLAGS) -o $@
 
 all: $(BINARY_PATH)/$(BINARY_NAME)
 	@echo "Making symlink: $(BINARY_NAME) -> $<"
