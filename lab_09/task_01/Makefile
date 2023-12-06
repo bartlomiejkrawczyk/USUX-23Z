@@ -10,7 +10,6 @@ INCLUDES = -I $(SOURCE_PATH) -I include
 LINK_FLAGS =
 COMPLEX_LINK_FLAGS =
 REAL_LINK_FLAGS =
-SHELL = /bin/bash
 
 print-%: ; @echo $*=$($*)
 
@@ -60,7 +59,7 @@ dirs:
 clean:
 	@echo "Deleting $(BINARY_NAME) symlink"
 	@$(RM) $(BINARY_NAME)
-	@echo "Deleting directories"
+	@echo "Deleting build and bin directories"
 	@$(RM) -r build
 	@$(RM) -r bin
 
