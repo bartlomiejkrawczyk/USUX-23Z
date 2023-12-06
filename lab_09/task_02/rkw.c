@@ -1,6 +1,6 @@
 #include "rkw.h"
 
-void main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 	double a, b, c, delta;
 	double x1, x2;
@@ -33,5 +33,5 @@ void main(int argc, char* argv[])
 		printf("Brak pierwiastkow rzeczywistych.\n");
 #endif
 	}
-	return;
+	return 0;
 }

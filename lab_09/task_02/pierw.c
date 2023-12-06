@@ -6,6 +6,8 @@ double Pierw(double a, double b, double delta, int flaga)
 		return (-b - sqrt(delta))/2*a;
 	else if (flaga == 2)
 		return (-b + sqrt(delta))/2*a;
+	printf("Unsupported flag was passed!!\n");
+	exit(2);
 }
 
 #ifdef ZESPOLONE
