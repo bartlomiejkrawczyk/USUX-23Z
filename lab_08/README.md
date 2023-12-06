@@ -39,8 +39,13 @@ $ tree
 > skompilować wszystkie pliki źródłowe i utworzyć z nich program wynikowy o nazwie `prog`,
 
 ```sh
-$ gcc src/*.c -Iinclude -lm -o prog
+$ gcc src/*.c -I include -lm -o prog
 ```
+
+Flagi:
+- `I` - zdefiniowanie gdzie szukać plików nagłówkowych
+- `lm` - dołączenie biblioteki matematycznej `m`
+- `o` - podanie nazwy wyjściowego pliku (defaultowo a.out)
 
 ```sh
 $ ./prog 1 -2 1
@@ -51,42 +56,74 @@ x2 = 1.000000
 > porównać rozmiar pliku wynikowego otrzymanego po kompilacji z włączoną i wyłączoną optymalizacją,
 
 ```sh
-$ gcc src/*.c -O0 -Iinclude -lm -o prog
+$ gcc src/*.c -O0 -I include -lm -o prog
 $ ls -la prog
--rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 16312 Nov 16 13:12 prog
-$ gcc src/*.c -O3 -Iinclude -lm -o prog
+-rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 16312 Dec  6 19:47 prog
+$ gcc src/*.c -O3 -I include -lm -o prog
 $ ls -la prog
--rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 16312 Nov 16 13:13 prog
+-rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 16312 Dec  6 19:48 prog
+$ gcc src/*.c -Os -I include -lm -o prog
+$ ls -la prog
+-rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 16312 Dec  6 19:49 prog
+$ gcc src/*.c -Ofast -I include -lm -o prog
+$ ls -la prog
+-rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 17784 Dec  6 20:12 prog
 ```
+
+Optymalizacje włączamy za pomocą flagi `-On`, gdzie n może mieć wartości `0-3`, `s` lub `fast`.
+
+option    | optimization level                                 | execution time | code size | memory usage | compile time
+----------|----------------------------------------------------|----------------|-----------|--------------|-------------
+-O0       | optimization for compilation time (default)        | +              | +         | -            | -
+-O1 or -O | optimization for code size and execution time      | -              | -         | +            | +
+-O2       | optimization more for code size and execution time | --             |           | +            | ++
+-O3       | optimization more for code size and execution time | ---            |           | +            | +++
+-Os       | optimization for code size                         |                | --        |              | ++
+-Ofast    | O3 with fast none accurate math calculations       | ---            |           | +            | +++
+
+W większości przypadków plik wynikowy ma 16312. Jedynie gdy optymalizujemy prędkość bez dokładności dostajemy większy plik wynikowy.
 
 > znaleźć w kodzie źródłowym makro sterujące procesem prekompilacji i wykorzystując odpowiednią opcję programu `gcc` wykonać punkt 1b w dwóch wersjach
 
 ```sh
-$ gcc -DZESPOLONE src/*.c -Iinclude  -lm -o prog
+$ gcc -DZESPOLONE src/*.c -I include  -lm -o prog
 $ ./prog 1 1 1
 x1 = -0.500000 + -0.866025j
 x2 = -0.500000 + 0.866025j
 ```
 
 ```sh
-$ gcc -UZESPOLONE src/*.c -Iinclude  -lm -o prog
+$ gcc -UZESPOLONE src/*.c -I include  -lm -o prog
 $ ./prog 1 1 1
 Brak pierwiastkow rzeczywistych.
 ```
+
+Flaga `D` (#define) pozwala na definiowanie makra, a flaga `U` (#undef) wymusza pozbycie się definicji podanego makra.
 
 2. Posługując się programem `ar` wykonać operacje:
     - zbudować własną bibliotekę statyczną `libusux.a` z wybranych plików obiektowych,
     - wykorzystać stworzoną bibliotekę do utworzenia tego samego programu co w punkcie 1b.
 
 > zbudować własną bibliotekę statyczną `libusux.a` z wybranych plików obiektowych,
+
 ```sh
-$ gcc -c src/delta.c src/pierw.c -Iinclude
-$ ar -rv libusux.a delta.o pierw.o
+$ gcc -c src/delta.c src/pierw.c -I include
+$ ar -r libusux.a delta.o pierw.o
 ```
 
+Flaga gcc `c` wymusza kompilację i asemblację bez linkowania plików.
+
+Flaga ar `r` wskazuje, aby nowe pliki zastąpiły stare pliki archiwum lub utworzyły nowe.
+
 > wykorzystać stworzoną bibliotekę do utworzenia tego samego programu co w punkcie 1b.
+
 ```sh
-$ gcc src/rkw.c libusux.a -Iinclude -lm -o prog
+$ gcc src/rkw.c libusux.a -I include -lm -o prog
+```
+
+```sh
+$ ./prog 1 1 1
+Brak pierwiastkow rzeczywistych.
 ```
 
 3. Posługując się programem `gcc` wykonać operacje:
@@ -96,17 +133,22 @@ $ gcc src/rkw.c libusux.a -Iinclude -lm -o prog
 
 > zbudować własną bibliotekę dzieloną (dynamiczną) `libusux.so` z wybranych plików obiektowych,
 
-<!-- flagą pic (position independent code) -->
 ```sh
-$ gcc -c -fpic src/delta.c src/pierw.c
+$ gcc -c -fpic src/delta.c src/pierw.c -I include
 $ gcc -shared *.o -o libusux.so
 ```
+
+Flagi:
+- `fpic` - wskazuje na kod niezależny od pozycji (position independent code),
+- `shared` - oznajmia, aby utworzyć współdzieloną bibliotekę.
 
 > wykorzystać stworzoną bibliotekę do utworzenia tego samego programu co w punkcie 1b.
 
 ```sh
-$ gcc src/rkw.c -L. -Iinclude -lm -lusux -o prog
+$ gcc src/rkw.c -L. -I include -lusux -lm -o prog
 ```
+
+Potrzebne jest wskazanie lokalizacji utworzonej biblioteki `-L.` oraz dołączenie utworzonej biblioteki o nazwie usux `-lusux`.
 
 > zmodyfikować ścieżkę poszukiwań bibliotek, aby umożliwić wykonywanie programu.
 
@@ -115,7 +157,7 @@ $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)
 ```
 
 ```sh
-$ ./prog_libusux_so 1 -3 1
+$ ./prog 1 -3 1
 x1 = 0.381966
 x2 = 2.618034
 ```
@@ -126,9 +168,20 @@ x2 = 2.618034
 
 ```sh
 $ nm prog
-TODO
+0000000000001395 T Delta
+00000000000013db T Pierw
+0000000000003d90 d _DYNAMIC
+...
+
 $ nm libusux.a
-TODO
+
+delta.o:
+0000000000000000 T Delta
+
+pierw.o:
+0000000000000000 T Pierw
+                 U exit
+                 U sqrt
 ```
 
 > Usunąć tablicę symboli z obu tych plików.
@@ -138,9 +191,25 @@ $ strip prog
 $ strip libusux.a
 ```
 
+```sh
+$ nm prog 
+nm: prog: no symbols
+$ nm libusux.a 
+
+delta.o:
+nm: delta.o: no symbols
+
+pierw.o:
+nm: pierw.o: no symbols
+```
+
 > Powtórzyć punkt 2b i wytłumaczyć ewentualne różnice w działaniu kompilatora.
 
-TODO
+```sh
+$ gcc src/rkw.c libusux.a -I include -lm -o prog
+/usr/bin/ld: libusux.a: error adding symbols: archive has no index; run ranlib to add one
+collect2: error: ld returned 1 exit status
+```
 
 Kompilacja bez tablicy symboli jest nie możliwa.
 
@@ -155,10 +224,10 @@ Kompilacja bez tablicy symboli jest nie możliwa.
 > stworzyć program `prog` w taki sposób by umożliwić śledzenie jego pracy za pomocą `gdb`,
 
 ```sh
-$ gcc src/*.c -Iinclude -ggdb -lm -o prog
+$ gcc src/*.c -I include -ggdb -lm -o prog
 ```
--ggdb lub -g
 
+Możemy skorzystać z flag `-ggdb` lub `-g`.
 
 > obejrzeć kod źródłowy przy pomocy `gdb`, wybrać miejsca dla kilku pułapek i je ustawić,
 
