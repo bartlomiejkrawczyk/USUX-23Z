@@ -12,11 +12,11 @@ print-%: ; @echo $*=$($*)
 all: $(DIRECTORIES:%=all-%)
 
 all-%:
-	$(CMD_PREFIX)echo "Build $*"
+	@echo "Build $*"
 	$(CMD_PREFIX)cd "$*" ; $(MAKE) --no-print-directory
 
 clean: $(DIRECTORIES:%=clean-%)
 
 clean-%:
-	$(CMD_PREFIX)echo "Cleaning $*"
+	@echo "Cleaning $*"
 	$(CMD_PREFIX)cd "$*" ; $(MAKE) clean --no-print-directory
