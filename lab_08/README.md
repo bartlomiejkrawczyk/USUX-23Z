@@ -211,9 +211,12 @@ nm: pierw.o: no symbols
 $ gcc src/rkw.c libusux.a -I include -lm -o prog
 libusux.a: error adding symbols: Archive has no index; run ranlib to add one
 collect2: error: ld returned 1 exit status
+$ ./prog 1 -2 1
+x1 = 1.000000
+x2 = 1.000000
 ```
 
-Kompilacja bez tablicy symboli jest nie możliwa.
+Kompilacja bez tablicy symboli jest nie możliwa. Jednak program dalej działa.
 
 5. Używając programów `gcc` i `gdb` wykonać następujące polecenia:
     - stworzyć program `prog` w taki sposób by umożliwić śledzenie jego pracy za pomocą `gdb`,
