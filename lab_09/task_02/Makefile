@@ -81,7 +81,7 @@ $(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXTENSION)
 
 $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a: $(OBJECTS)
 	@echo "Making library: $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a from: $^"
-	$(CMD_PREFIX)ar -r $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a $^ 2>/dev/null
+	$(CMD_PREFIX)ar -rv $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a $? 2>/dev/null
 
 $(BINARY_PATH)/$(BINARY_NAME): $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a $(MAIN_OBJECT)
 	@echo "Linking: $@"
