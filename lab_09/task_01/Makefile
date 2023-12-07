@@ -3,7 +3,7 @@ CC ?= gcc
 SOURCE_EXTENSION = c
 SOURCE_PATH = .
 LIBRARIES = m
-COMPILE_FLAGS = -Wall -Wextra -Werror -pedantic -Wstrict-aliasing -Wunreachable-code -g
+COMPILE_FLAGS = -std=c99 -Wall -Wextra -Werror -pedantic -Wstrict-aliasing -Wunreachable-code -g
 COMPLEX_COMPILE_FLAGS = -DZESPOLONE
 REAL_COMPILE_FLAGS = -UZESPOLONE
 INCLUDES = -I $(SOURCE_PATH) -I include
