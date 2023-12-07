@@ -58,16 +58,16 @@ x2 = 1.000000
 ```sh
 $ gcc src/*.c -O0 -I include -lm -o prog
 $ ls -la prog
--rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 16312 Dec  6 19:47 prog
+-rwxr-xr-x 1 usux5 usux 8688 12-07 10:17 prog
 $ gcc src/*.c -O3 -I include -lm -o prog
 $ ls -la prog
--rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 16312 Dec  6 19:48 prog
+-rwxr-xr-x 1 usux5 usux 8688 12-07 10:18 prog
 $ gcc src/*.c -Os -I include -lm -o prog
 $ ls -la prog
--rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 16312 Dec  6 19:49 prog
+-rwxr-xr-x 1 usux5 usux 8688 12-07 10:18 prog
 $ gcc src/*.c -Ofast -I include -lm -o prog
 $ ls -la prog
--rwxr-xr-x 1 bartlomiejkrawczyk bartlomiejkrawczyk 17784 Dec  6 20:12 prog
+-rwxr-xr-x 1 usux5 usux 10304 12-07 10:18 prog
 ```
 
 Optymalizacje włączamy za pomocą flagi `-On`, gdzie n może mieć wartości `0-3`, `s` lub `fast`.
@@ -81,7 +81,7 @@ option    | optimization level                                 | execution time 
 -Os       | optimization for code size                         |                | --        |              | ++
 -Ofast    | O3 with fast none accurate math calculations       | ---            |           | +            | +++
 
-W większości przypadków plik wynikowy ma 16312. Jedynie gdy optymalizujemy prędkość bez dokładności dostajemy większy plik wynikowy.
+W większości przypadków plik wynikowy ma 8688. Jedynie gdy optymalizujemy prędkość bez dokładności dostajemy większy plik wynikowy.
 
 > znaleźć w kodzie źródłowym makro sterujące procesem prekompilacji i wykorzystując odpowiednią opcję programu `gcc` wykonać punkt 1b w dwóch wersjach
 
@@ -168,9 +168,11 @@ x2 = 2.618034
 
 ```sh
 $ nm prog
-0000000000001395 T Delta
-00000000000013db T Pierw
-0000000000003d90 d _DYNAMIC
+000000000060105c B __bss_start
+000000000060105c b completed.6355
+0000000000601058 D __data_start
+0000000000601058 W data_start
+                 U Delta
 ...
 
 $ nm libusux.a
@@ -179,8 +181,8 @@ delta.o:
 0000000000000000 T Delta
 
 pierw.o:
-0000000000000000 T Pierw
                  U exit
+0000000000000000 T Pierw
                  U sqrt
 ```
 
@@ -207,7 +209,7 @@ nm: pierw.o: no symbols
 
 ```sh
 $ gcc src/rkw.c libusux.a -I include -lm -o prog
-/usr/bin/ld: libusux.a: error adding symbols: archive has no index; run ranlib to add one
+libusux.a: error adding symbols: Archive has no index; run ranlib to add one
 collect2: error: ld returned 1 exit status
 ```
 
