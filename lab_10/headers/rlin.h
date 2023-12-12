@@ -3,5 +3,4 @@
 
 void WczytajDane(void);
 
-double a, b;
-
+extern double a, b;

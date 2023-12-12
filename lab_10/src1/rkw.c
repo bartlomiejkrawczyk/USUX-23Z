@@ -1,13 +1,13 @@
 #include "rkw.h"
 
-void main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	double a, b, c, delta;
 	double x1, x2;
 #ifdef ZESPOLONE
 	double *x1z, *x2z;
 #endif
-	
+
 	if (argc != 4)
 	{
 		printf("Poprawna skladnia:\t%s a b c\n", argv[0]);
@@ -33,5 +33,5 @@ void main(int argc, char* argv[])
 		printf("Brak pierwiastkow rzeczywistych.\n");
 #endif
 	}
-	return;
+	return 0;
 }

@@ -1,13 +1,14 @@
 #include "rlin.h"
 
+double a, b;
+
 void WczytajDane(void)
 {
         printf("Podaj wspolczynniki rownania liniowego ax + b = 0\n");
         printf("a = ");
-        scanf("%f",&a);
+        scanf("%lf", &a);
         printf("b = ");
-        scanf("%f",&b);
-	printf("\n");
+        scanf("%lf", &b);
+        printf("\n");
         return;
 }
-

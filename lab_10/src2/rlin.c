@@ -1,11 +1,11 @@
 #include "rlin.h"
 
-void main(int argc, char* argv[])
+int main()
 {
 	double x;
-	
+
 	WczytajDane();
-	x = -b/a;
+	x = -b / a;
 	printf("x1 = %lf\n", x);
-	return;
+	return 0;
 }

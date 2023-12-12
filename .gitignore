@@ -1,0 +1,6 @@
+build/
+bin/
+*.a
+complex/
+real/
+prog*
