@@ -1,7 +1,7 @@
 CC ?= gcc
 SOURCE_EXTENSION = c
 SOURCE_PATH = .
-LIBRARIES =
+LIBRARIES = m
 COMPILE_FLAGS = -std=c99 -Wall -Wextra -Werror -pedantic -Wstrict-aliasing -Wunreachable-code -g
 INCLUDES = -I $(SOURCE_PATH) -I headers
 LINK_FLAGS =
@@ -15,7 +15,9 @@ ifeq ($(VERBOSE),true)
 	CMD_PREFIX :=
 endif
 
-BINARY_NAME := prog # TODO: this must be the name of file containing main
+MAIN_FILE := $(shell grep --include=**.$(SOURCE_EXTENSION) -Ril main | head -1)
+MAIN_FILE_NAME := $(shell basename $(MAIN_FILE))
+BINARY_NAME := $(MAIN_FILE_NAME:.c=)
 
 CFLAGS := $(CFLAGS) $(COMPILE_FLAGS)
 LDFLAGS := $(LDFLAGS) $(LINK_FLAGS)
