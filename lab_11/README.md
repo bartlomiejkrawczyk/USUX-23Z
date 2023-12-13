@@ -1,4 +1,4 @@
-# Użytkowanie systemu UNIX (USUX) - Ćwiczenie 8
+# Użytkowanie systemu UNIX (USUX) - Ćwiczenie 11
 
 ## Student
 ```md
