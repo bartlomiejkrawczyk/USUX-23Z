@@ -1,6 +1,6 @@
 CC ?= gcc
 
-BINARY_PATH = bin
+INSTALL_PATH = bin
 
 export COMPILE_FLAGS = -Wall -Wextra -Werror -pedantic -Wstrict-aliasing -Wunreachable-code -g
 export COMPLEX_COMPILE_FLAGS = -DZESPOLONE
@@ -8,6 +8,8 @@ export REAL_COMPILE_FLAGS = -UZESPOLONE
 export LINK_FLAGS =
 export COMPLEX_LINK_FLAGS =
 export REAL_LINK_FLAGS =
+
+export INSTALL_PATH := $(shell realpath $(INSTALL_PATH))
 
 print-%: ; @echo $*=$($*)
 
@@ -25,17 +27,52 @@ print-%: ; @echo $*=$($*)
 all: $(DIRECTORIES:%=all-%)
 
 all-%:
-	@echo "Build $*"
-	$(CMD_PREFIX)cd "$*" ;  (test -f "Makefile" && $(MAKE) --no-print-directory) || true
-	@echo
+	$(CMD_PREFIX)cd "$*" ;  \
+	(test -f "Makefile" \
+		&& echo "Build $*" \
+		&& $(MAKE) --no-print-directory \
+		&& (echo) \
+	) || true
+
+complex: $(DIRECTORIES:%=complex-%)
+
+complex-%:
+	$(CMD_PREFIX)cd "$*" ;  \
+	(test -f "Makefile" \
+		&& echo "Build complex $*" \
+		&& $(MAKE) complex --no-print-directory \
+		&& (echo) \
+	) || true
+
+real: $(DIRECTORIES:%=real-%)
+
+real-%:
+	$(CMD_PREFIX)cd "$*" ;  \
+	(test -f "Makefile" \
+		&& echo "Build real $*" \
+		&& $(MAKE) real --no-print-directory \
+		&& (echo) \
+	) || true
 
 clean: $(DIRECTORIES:%=clean-%)
 
 clean-%:
-	@echo "Cleaning $*"
-	$(CMD_PREFIX)cd "$*" ; (test -f "Makefile" && $(MAKE) clean --no-print-directory) || true
+	$(CMD_PREFIX)cd "$*" ; \
+	(test -f "Makefile" \
+		&& echo "Cleaning $*" \
+		&& $(MAKE) clean --no-print-directory \
+		&& (echo) \
+	) || true
 
+install: $(INSTALL_PATH) $(DIRECTORIES:%=install-%)
+
+$(INSTALL_PATH):
+	@mkdir -p $(INSTALL_PATH)
 
 install-%:
-	@echo "Installing $*"
-	$(CMD_PREFIX)cd "$*" ; (test -f "Makefile" && $(MAKE) install --no-print-directory) || true
+	$(CMD_PREFIX)cd "$*" ; \
+	(test -f "Makefile" \
+		&& echo "Installing $*" \
+		&&  $(MAKE) install --no-print-directory \
+		&& (echo) \
+	) || true

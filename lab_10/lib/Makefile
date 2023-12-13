@@ -63,6 +63,8 @@ clean:
 	$(CMD_PREFIX)$(RM) -r build
 	$(CMD_PREFIX)$(RM) -r lib
 
+.PHONY: install
+
 $(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXTENSION)
 	@echo "Compiling: $< -> $@"
 	$(CMD_PREFIX)$(CC) $(CFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@

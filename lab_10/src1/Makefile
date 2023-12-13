@@ -1,5 +1,6 @@
 BINARY_NAME := prog_1
 LIBRARY_NAME := usux
+INSTALL_PATH ?= install
 
 CC ?= gcc
 SOURCE_EXTENSION = c
@@ -26,15 +27,15 @@ endif
 
 build: complex
 
-complex: export CFLAGS := $(CFLAGS) $(COMPILE_FLAGS) $(COMPLEX_COMPILE_FLAGS)
-complex: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(COMPLEX_LINK_FLAGS)
+CFLAGS ?= $(COMPILE_FLAGS) $(COMPLEX_COMPILE_FLAGS)
+LDFLAGS ?= $(LINK_FLAGS) $(COMPLEX_LINK_FLAGS)
 real: export CFLAGS := $(CFLAGS) $(COMPILE_FLAGS) $(REAL_COMPILE_FLAGS)
 real: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(REAL_LINK_FLAGS)
 
-complex: export BUILD_TYPE := complex
-complex: export BUILD_PATH := build/complex
-complex: export BINARY_PATH := bin/complex
-complex: export LIBRARY_PATH := $(LIBRARY_SRC_PATH)/lib/complex
+BUILD_TYPE ?= complex
+BUILD_PATH ?= build/complex
+BINARY_PATH ?= bin/complex
+LIBRARY_PATH ?= $(LIBRARY_SRC_PATH)/lib/complex
 real: export BUILD_TYPE := real
 real: export BUILD_PATH := build/real
 real: export BINARY_PATH := bin/real
@@ -48,12 +49,12 @@ DEPENDENCIES = $(OBJECTS:.o=.d)
 -include $(DEPENDENCIES)
 
 .PHONY: complex
-complex: dirs
+complex:
 	@echo "Start complex numbers build"
 	@$(MAKE) all --no-print-directory
 
 .PHONY: real
-real: dirs
+real:
 	@echo "Start real numbers build"
 	@$(MAKE) all --no-print-directory
 
@@ -70,6 +71,13 @@ clean:
 	@echo "Deleting build and bin directories"
 	@$(RM) -r build
 	@$(RM) -r bin
+	@$(RM) -r $(INSTALL_PATH)
+
+.PHONY: install
+install: all
+	@echo "Installing $(BINARY_NAME)"
+	@mkdir -p $(INSTALL_PATH)
+	$(CMD_PREFIX)cp $(BINARY_PATH)/$(BINARY_NAME) $(INSTALL_PATH)/
 
 $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a:
 	$(CMD_PREFIX)cd $(LIBRARY_SRC_PATH) ;  (test -f "Makefile" && $(MAKE) $(BUILD_TYPE) --no-print-directory) || true
@@ -82,7 +90,7 @@ $(BINARY_PATH)/$(BINARY_NAME): $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a $(OBJECTS)
 	@echo "Linking: $@"
 	$(CMD_PREFIX)$(CC) $(OBJECTS) $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a $(LDFLAGS) -o $@
 
-all: $(BINARY_PATH)/$(BINARY_NAME)
+all: dirs $(BINARY_PATH)/$(BINARY_NAME)
 	@echo "Making symlink: $(BINARY_NAME) -> $<"
 	@$(RM) $(BINARY_NAME)
 	@ln -s $(BINARY_PATH)/$(BINARY_NAME) $(BINARY_NAME)
