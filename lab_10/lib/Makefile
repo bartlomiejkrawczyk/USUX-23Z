@@ -1,17 +1,15 @@
-LIBRARY_NAME := usux
+LIBRARY_NAME ?= usux
+BUILD_PATH ?= build
+LIBRARY_PATH ?= lib
 
 CC ?= gcc
 SOURCE_EXTENSION = c
 SOURCE_PATH = .
 LIBRARIES = m
-INCLUDES = -I ../headers
+INCLUDES =../headers
 
 COMPILE_FLAGS ?= -std=c99 -Wall -Wextra -Werror -pedantic -Wstrict-aliasing -Wunreachable-code -g
-COMPLEX_COMPILE_FLAGS ?= -DZESPOLONE
-REAL_COMPILE_FLAGS ?= -UZESPOLONE
 LINK_FLAGS ?=
-COMPLEX_LINK_FLAGS ?=
-REAL_LINK_FLAGS ?=
 
 print-%: ; @echo $*=$($*)
 
@@ -22,34 +20,22 @@ ifeq ($(VERBOSE),true)
 	CMD_PREFIX :=
 endif
 
-build: complex
+.PHONY: build
+build: echo_build all
 
-complex: export CFLAGS := $(CFLAGS) $(COMPILE_FLAGS) $(COMPLEX_COMPILE_FLAGS)
-complex: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(COMPLEX_LINK_FLAGS)
-real: export CFLAGS := $(CFLAGS) $(COMPILE_FLAGS) $(REAL_COMPILE_FLAGS)
-real: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(REAL_LINK_FLAGS)
+CFLAGS := $(CFLAGS) $(COMPILE_FLAGS)
+LDFLAGS := $(LDFLAGS) $(LINK_FLAGS)
 
-complex: export BUILD_PATH := build/complex
-complex: export LIBRARY_PATH := lib/complex
-real: export BUILD_PATH := build/real
-real: export LIBRARY_PATH := lib/real
-
-SOURCES = $(shell find $(SOURCE_PATH) -name '*.$(SOURCE_EXTENSION)' ! -name '$(MAIN_FILE)')
+SOURCES = $(shell find $(SOURCE_PATH) -name '*.$(SOURCE_EXTENSION)')
 
 OBJECTS = $(SOURCES:$(SOURCE_PATH)/%.$(SOURCE_EXTENSION)=$(BUILD_PATH)/%.o)
 DEPENDENCIES = $(OBJECTS:.o=.d)
 
 -include $(DEPENDENCIES)
 
-.PHONY: complex
-complex: dirs
-	@echo "Start complex numbers build"
-	@$(MAKE) all --no-print-directory
-
-.PHONY: real
-real: dirs
-	@echo "Start real numbers build"
-	@$(MAKE) all --no-print-directory
+.PHONY: echo_build
+echo_build:
+	@echo "Start build"
 
 .PHONY: dirs
 dirs:
@@ -67,10 +53,10 @@ clean:
 
 $(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXTENSION)
 	@echo "Compiling: $< -> $@"
-	$(CMD_PREFIX)$(CC) $(CFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
+	$(CMD_PREFIX)$(CC) $(CFLAGS) -I $(INCLUDES) -MP -MMD -c $< -o $@
 
 $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a: $(OBJECTS)
 	@echo "Making library: $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a from: $^"
 	$(CMD_PREFIX)$(AR) -rv $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a $? 2>/dev/null
 
-all: $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a
+all: dirs $(LIBRARY_PATH)/lib$(LIBRARY_NAME).a
