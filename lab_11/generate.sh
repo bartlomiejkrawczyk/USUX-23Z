@@ -15,4 +15,18 @@ if [[ $# != 1 ]]; then
     signal_exception "Wrong number of arguments!"
 fi
 
+DIRECTORY="$1"
+
+if [[ ! -d "$DIRECTORY" ]]; then
+    signal_exception "Provided directory $DIRECTORY does not exist"
+fi
+
+if [[ ! -r "$DIRECTORY" ]]; then
+    signal_exception "User does not have read persmission for directory $DIRECTORY"
+fi
+
+if [[ ! -x "$DIRECTORY" ]]; then
+    signal_exception "User does not have execute persmission for directory $DIRECTORY"
+fi
+
 cp Makefile "$1"
