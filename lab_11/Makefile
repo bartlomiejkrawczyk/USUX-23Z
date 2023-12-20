@@ -15,6 +15,9 @@ ifeq ($(VERBOSE),true)
 	CMD_PREFIX :=
 endif
 
+.PHONY: build
+build: echo_build all
+
 MAIN_FILE := $(shell grep --include=**.$(SOURCE_EXTENSION) -Ril main | head -1)
 MAIN_FILE_NAME := $(shell basename $(MAIN_FILE))
 BINARY_NAME := $(MAIN_FILE_NAME:.c=)
@@ -32,8 +35,9 @@ DEPENDENCIES = $(OBJECTS:.o=.d)
 
 -include $(DEPENDENCIES)
 
-.PHONY: build
-build: all
+.PHONY: echo_build
+echo_build:
+	@echo "Start build"
 
 .PHONY: dirs
 dirs:
