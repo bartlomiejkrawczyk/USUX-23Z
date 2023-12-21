@@ -2,7 +2,7 @@ CC ?= gcc
 
 INSTALL_PATH = bin
 
-export COMPILE_FLAGS = -Wall -Wextra -Werror -pedantic -Wstrict-aliasing -Wunreachable-code -g -DZESPOLONE
+export COMPILE_FLAGS = -std=c99 -Wall -Wextra -Werror -pedantic -Wstrict-aliasing -Wunreachable-code -g -DZESPOLONE
 export LINK_FLAGS =
 
 export INSTALL_PATH := $(shell realpath $(INSTALL_PATH))
