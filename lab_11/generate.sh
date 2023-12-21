@@ -29,10 +29,14 @@ if [[ ! -x "$DIRECTORY" ]]; then
     signal_exception "User does not have execute persmission for directory $DIRECTORY"
 fi
 
-MAIN_FILE=$(grep --include=**.c -RlE '(int|void)\s+main\s*\(' | head -1)
+cd "$DIRECTORY"
+
+MAIN_FILE=$(grep --include=\*\*.c -RlE '(int|void)\s+main\s*\(' | head -1)
 
 if [[ ! -f "$MAIN_FILE" ]]; then
     signal_exception "Cannot find main file"
 fi
+
+cd - >/dev/null
 
 cp Makefile "$DIRECTORY"
