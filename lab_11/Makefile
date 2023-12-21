@@ -18,7 +18,7 @@ endif
 .PHONY: build
 build: echo_build all
 
-MAIN_FILE := $(shell grep --include=**.$(SOURCE_EXTENSION) -Ril main | head -1)
+MAIN_FILE := $(shell grep --include=**.$(SOURCE_EXTENSION) -l 'main\s?\()' | head -1)
 MAIN_FILE_NAME := $(shell basename $(MAIN_FILE))
 BINARY_NAME := $(MAIN_FILE_NAME:.c=)
 
